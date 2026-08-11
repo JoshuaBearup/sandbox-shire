@@ -1,13 +1,13 @@
 # Sandbox Shire
 
-**A fake council website with an AI assistant you are invited to break.**
+**Break an AI assistant using nothing but plain English.**
 
 Sandbox Shire Council is not real. Ava, the assistant in the corner of its website, is. She runs on
 whatever model you point her at, she has instructions she has been told to keep private, and she can
 see things she should not show you.
 
-Your job is to get them out of her. There are three acts, and what you take from each one is the key
-to the next.
+You get them out of her by talking to her. No code, no tools, no exploits — just sentences. There
+are three acts, and what you take from each one is the key to the next.
 
 Runs on your machine with one command. No account, no cloud, no sign-up.
 
@@ -15,16 +15,18 @@ Runs on your machine with one command. No account, no cloud, no sign-up.
 
 ## Why
 
-Someone is probably adding an AI assistant to a system you use or own. The question everyone gets
-asked is *"is it safe?"* and almost nobody has a way to judge the answer.
+**AI systems can be attacked with ordinary language.**
 
-This gives you one, by letting you do it yourself. It takes about twenty minutes and needs no
-technical background. By the end you will have talked a council assistant into handing over a staff
-password, and then used that password to rewrite what she is — and you will understand, from having
-done it, why the thing governing an AI system's behaviour being a paragraph of plain English is a
-genuinely new kind of risk.
+Not code. Not tooling. Not anything a penetration test would recognise. You type English at an
+assistant and it does something it was explicitly told not to do.
 
-It is not an argument against using AI. It is how you check.
+That is genuinely new. What governs how these systems behave is a paragraph of plain English, and
+plain English is something anyone can write. The skill barrier that used to stand between a curious
+person and a system's behaviour is largely gone.
+
+The fastest way to understand that is to do it. Here you get twenty minutes, three acts and no
+technical background required. By the end you will have talked an assistant into handing over a
+staff password, and used that password to rewrite what she tells everyone who asks her a question.
 
 ---
 
@@ -109,14 +111,13 @@ nowhere else. Your conversations with Ava are not stored anywhere at all.
 
 ## Where it came from
 
-This is the single-player extraction of **Everyone's a Hacker**, a workshop built for sixty
-local-government staff at ALGIM 2026. That version needs a facilitator, a projector, a room and
-sixty phones. This one needs you.
+This started life as a room-sized workshop called **Everyone's a Hacker**, which needed a
+facilitator and everyone present at once. This is the single-player version, which needs neither.
 
-One thing genuinely improves in the extraction: in the workshop, Act Three has to be a demo the
-facilitator runs, because letting sixty strangers rewrite the live assistant is the exact
-vulnerability being taught. On your own machine, there is nobody to protect it from. It is the best
-act in the set and this is the version that can hand it over.
+It gains something in the move. In a room, Act Three has to be a demo run from the front, because
+letting a crowd of strangers rewrite the live assistant is the exact vulnerability being taught. On
+your own machine there is nobody to protect it from, so you get to do it yourself. It is the best
+act of the three.
 
 ---
 
