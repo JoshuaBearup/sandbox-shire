@@ -1,6 +1,6 @@
 # Sandbox Shire
 
-**Break an AI assistant using nothing but plain English.**
+**Break an AI assistant using nothing but natural language.**
 
 Sandbox Shire Council is not real. Ava, the assistant in the corner of its website, is. She runs on
 whatever model you point her at, she has instructions she has been told to keep private, and she can
@@ -15,14 +15,14 @@ Runs on your machine with one command. No account, no cloud, no sign-up.
 
 ## Why
 
-**AI systems can be attacked with ordinary language.**
+**AI systems can be attacked with natural language.**
 
-Not code. Not tooling. Not anything a penetration test would recognise. You type English at an
-assistant and it does something it was explicitly told not to do.
+Not code. Not tooling. Not anything a penetration test would recognise. You type ordinary sentences
+at an assistant and it does something it was explicitly told not to do.
 
-That is genuinely new. What governs how these systems behave is a paragraph of plain English, and
-plain English is something anyone can write. The skill barrier that used to stand between a curious
-person and a system's behaviour is largely gone.
+That is genuinely new. What governs how these systems behave is a paragraph of natural language,
+and natural language is something anyone can write. The skill barrier that used to stand between a
+curious person and a system's behaviour is largely gone.
 
 The fastest way to understand that is to do it. Here you get twenty minutes, three acts and no
 technical background required. By the end you will have talked an assistant into handing over a

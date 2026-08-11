@@ -173,7 +173,7 @@ export const ACTS = [
     reveal: {
       how:
         'Nobody hacked anything. No code was changed, no server was breached, no vulnerability ' +
-        'was exploited. Someone with a stolen password edited a paragraph of plain English in a ' +
+        'was exploited. Someone with a stolen password edited a paragraph of natural language in a ' +
         'text box, and the council\'s assistant now tells every resident something different.',
       incident:
         'Amazon shipped an AI coding assistant containing a stranger\'s malicious instructions ' +
