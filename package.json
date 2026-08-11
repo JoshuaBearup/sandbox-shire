@@ -1,0 +1,29 @@
+{
+  "name": "sandbox-shire",
+  "version": "0.1.0",
+  "description": "A fake council website with an AI assistant you are invited to break. Three acts, bring your own model.",
+  "type": "module",
+  "bin": {
+    "sandbox-shire": "server.js"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "prompt-injection",
+    "llm-security",
+    "owasp-llm-top-10",
+    "security-training",
+    "ai-safety",
+    "capture-the-flag"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoshuaBearup/sandbox-shire.git"
+  }
+}

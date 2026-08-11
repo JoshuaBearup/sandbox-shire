@@ -1,0 +1,209 @@
+/* Sandbox Shire — written from scratch. No third-party framework, no external fonts, no CDN.
+ *
+ * TWO REGISTERS, and the second one is the part people get wrong:
+ *
+ *   1. THE COUNCIL — deliberately plain. Flat surfaces, ordinary municipal layout, restrained
+ *      colour. It is a finished design, not an unstyled one, and it must read as a real
+ *      council website a real council would actually ship.
+ *   2. THE WALKTHROUGH — the rail, the reveal, the settings. Darker, clearly an overlay on top
+ *      of the council rather than part of it.
+ *
+ * ⚠️ DO NOT "FINISH" THE COUNCIL BY MAKING IT LOOK DESIGNED. Act Three lands because the staff
+ * portal reads as a boring intranet — the point is that a paragraph of plain English in a dull
+ * text box controls a council system. A Sandbox Shire that looks like a polished product
+ * weakens the whole thing.
+ *
+ * System fonts only, so it renders identically offline and fetches nothing.
+ */
+
+:root {
+  /* The council. Muted institutional blue-green — the colour of every council website. */
+  --civic-900: #10333c;
+  --civic-800: #17454f;
+  --civic-700: #1d5763;
+  --civic-600: #266d7c;
+  --civic-100: #e3eef0;
+  --civic-050: #f2f7f8;
+
+  --ink: #1c2427;
+  --ink-soft: #4a585d;
+  --ink-faint: #6f7c81;
+  --line: #d3dde0;
+  --page: #ffffff;
+  --wash: #f6f8f9;
+
+  /* The walkthrough overlay. */
+  --hud-bg: #14191c;
+  --hud-raise: #1e2529;
+  --hud-line: #2f3a40;
+  --hud-ink: #e8edef;
+  --hud-soft: #98a6ad;
+  --hud-accent: #4bb8a9;
+  --hud-warn: #e0a33c;
+  --hud-bad: #d97066;
+
+  --rail-w: 400px;
+  --radius: 6px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--page);
+  line-height: 1.55;
+  font-size: 16px;
+}
+
+/* When the walkthrough rail is open, the council shifts over rather than being covered —
+   you need to see both at once, because the site is the thing you are attacking. */
+body.rail-open .council { margin-right: var(--rail-w); }
+
+a { color: var(--civic-700); }
+a:hover { color: var(--civic-900); }
+
+.wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+/* ------------------------------------------------------------------- header */
+
+.site-header {
+  background: var(--civic-800);
+  color: #fff;
+  border-bottom: 4px solid var(--civic-600);
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 24px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.crest {
+  width: 34px; height: 34px; flex: none;
+  border: 2px solid rgba(255,255,255,.7); border-radius: 50%;
+  display: grid; place-items: center; font-size: 15px; letter-spacing: .5px;
+}
+.brand strong { display: block; font-size: 17px; letter-spacing: .2px; }
+.brand .tagline { display: block; font-size: 12px; opacity: .8; text-transform: uppercase; letter-spacing: 1.2px; }
+.site-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.site-nav a { color: rgba(255,255,255,.9); text-decoration: none; font-size: 14.5px; padding: 4px 0; border-bottom: 2px solid transparent; }
+.site-nav a:hover { color: #fff; border-bottom-color: rgba(255,255,255,.6); }
+
+/* --------------------------------------------------------------------- body */
+
+.hero { background: var(--civic-050); border-bottom: 1px solid var(--line); padding: 40px 0; }
+.hero h1 { margin: 0 0 8px; font-size: 30px; font-weight: 600; color: var(--civic-900); }
+.hero p { margin: 0 0 20px; max-width: 62ch; color: var(--ink-soft); }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-block; padding: 9px 18px; border-radius: var(--radius);
+  background: var(--civic-700); color: #fff; text-decoration: none;
+  font-size: 15px; border: 1px solid var(--civic-700); cursor: pointer;
+}
+.btn:hover { background: var(--civic-800); color: #fff; }
+.btn-ghost { background: #fff; color: var(--civic-700); }
+.btn-ghost:hover { background: var(--civic-050); color: var(--civic-900); }
+
+main { padding: 36px 0 56px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; background: #fff; }
+.card h3 { margin: 0 0 6px; font-size: 16.5px; color: var(--civic-800); font-weight: 600; }
+.card p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+
+.prose { max-width: 68ch; }
+.prose h2 { font-size: 21px; color: var(--civic-900); font-weight: 600; margin: 32px 0 10px; }
+.prose dl { margin: 0; }
+.prose dt { font-weight: 600; margin-top: 14px; color: var(--civic-800); }
+.prose dd { margin: 2px 0 0; color: var(--ink-soft); }
+
+.site-footer { background: var(--wash); border-top: 1px solid var(--line); padding: 24px 0; font-size: 13.5px; color: var(--ink-faint); }
+.site-footer p { margin: 0 0 6px; }
+.site-footer .fine { font-size: 12.5px; color: var(--ink-faint); }
+
+/* ---------------------------------------------------------------- Ava widget */
+
+.ava-launch {
+  position: fixed; right: 22px; bottom: 22px; z-index: 40;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 28px; border: none;
+  background: var(--civic-700); color: #fff; font: inherit; font-size: 15px;
+  cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.22);
+}
+.ava-launch:hover { background: var(--civic-800); }
+body.rail-open .ava-launch { right: calc(var(--rail-w) + 22px); }
+
+.ava-panel {
+  position: fixed; right: 22px; bottom: 22px; z-index: 41;
+  width: 380px; max-width: calc(100vw - 44px); height: 540px; max-height: calc(100vh - 44px);
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.24);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+body.rail-open .ava-panel { right: calc(var(--rail-w) + 22px); }
+.ava-panel[hidden] { display: none; }
+
+.ava-head { background: var(--civic-800); color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ava-head strong { font-size: 15px; font-weight: 600; }
+.ava-head small { display: block; font-size: 12px; opacity: .8; }
+.ava-close { background: none; border: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px; }
+
+/* A visible marker of WHICH Ava you are talking to. Not decoration — the acts target
+   different configurations of the same assistant, and being able to see which one is live is
+   the difference between an experiment and guesswork. */
+.ava-target { padding: 7px 16px; font-size: 12px; background: var(--civic-100); color: var(--civic-900); border-bottom: 1px solid var(--line); }
+.ava-target b { font-weight: 600; }
+
+.ava-log { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; background: var(--wash); }
+.msg { padding: 9px 13px; border-radius: 12px; font-size: 14.5px; max-width: 85%; white-space: pre-wrap; word-wrap: break-word; }
+.msg.ava { background: #fff; border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 3px; }
+.msg.you { background: var(--civic-700); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+.msg.sys { background: #fdf3e3; border: 1px solid #e8d3a8; color: #6b4f18; align-self: stretch; max-width: 100%; font-size: 13.5px; }
+.msg.sys b { display: block; margin-bottom: 2px; }
+
+.ava-leak { background: #12362f; color: #7fe0cb; font-size: 12.5px; padding: 7px 16px; border-top: 1px solid #1d4a41; }
+.ava-leak[hidden] { display: none; }
+
+.ava-compose { display: flex; gap: 8px; padding: 11px; border-top: 1px solid var(--line); background: #fff; }
+.ava-compose textarea {
+  flex: 1; resize: none; font: inherit; font-size: 14.5px; padding: 9px 11px;
+  border: 1px solid var(--line); border-radius: var(--radius); min-height: 42px; max-height: 120px;
+}
+.ava-compose textarea:focus { outline: 2px solid var(--civic-600); outline-offset: -1px; }
+.ava-compose button { padding: 0 16px; }
+
+.typing { display: inline-flex; gap: 4px; align-items: center; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }
+
+/* ------------------------------------------------------------------ staff portal */
+
+/* Deliberately drab. See the note at the top of this file — the dullness is load-bearing. */
+.portal { background: #eef1f2; min-height: 100vh; padding: 40px 0; }
+.portal-box { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 4px; }
+.portal-head { background: #33474e; color: #fff; padding: 13px 20px; font-size: 15px; }
+.portal-head small { display: block; opacity: .75; font-size: 12px; }
+.portal-body { padding: 22px; }
+.portal-body label { display: block; font-size: 13.5px; font-weight: 600; margin: 0 0 5px; color: var(--ink-soft); }
+.portal-body input[type=password], .portal-body input[type=text] {
+  width: 100%; padding: 9px 11px; font: inherit; border: 1px solid var(--line); border-radius: 3px;
+}
+.portal-body textarea {
+  width: 100%; min-height: 340px; font-family: var(--mono); font-size: 13px; line-height: 1.5;
+  padding: 12px; border: 1px solid var(--line); border-radius: 3px; resize: vertical;
+}
+.portal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+.portal-note { font-size: 13px; color: var(--ink-faint); margin: 10px 0 0; }
+
+.notice { padding: 10px 13px; border-radius: 4px; font-size: 14px; margin: 0 0 16px; }
+.notice.bad { background: #fdecea; border: 1px solid #f0b7b1; color: #8c2f26; }
+.notice.good { background: #e8f5ef; border: 1px solid #a8d8c3; color: #1d5c42; }
+.notice.warn { background: #fdf3e3; border: 1px solid #e8d3a8; color: #6b4f18; }
+.notice[hidden] { display: none; }
+
+@media (max-width: 900px) {
+  body.rail-open .council { margin-right: 0; }
+  body.rail-open .ava-launch, body.rail-open .ava-panel { right: 22px; }
+}

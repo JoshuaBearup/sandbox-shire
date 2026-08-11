@@ -1,0 +1,9 @@
+# Local configuration — HOLDS THE API KEY. Never commit.
+config.local.json
+.env
+.env.*
+
+node_modules/
+npm-debug.log*
+.DS_Store
+*.log

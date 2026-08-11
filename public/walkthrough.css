@@ -1,0 +1,114 @@
+/* The walkthrough rail.
+ *
+ * Sits alongside the council site while you play. The walkthrough register — dark, clearly an
+ * overlay, obviously NOT part of the council. See the note at the top of styles.css: keeping
+ * these two registers apart is what lets a player tell the exercise from the target.
+ */
+
+.rail {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 60;
+  width: var(--rail-w); max-width: 100vw;
+  background: var(--hud-bg); color: var(--hud-ink);
+  border-left: 1px solid var(--hud-line);
+  display: flex; flex-direction: column;
+  font-size: 14.5px;
+}
+.rail[hidden] { display: none; }
+
+.rail-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 18px; border-bottom: 1px solid var(--hud-line); flex: none;
+}
+.rail-act { display: block; font-size: 11.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--hud-accent); }
+.rail-head strong { font-size: 17px; font-weight: 600; }
+.rail-collapse {
+  background: none; border: 1px solid var(--hud-line); color: var(--hud-soft);
+  font: inherit; font-size: 13px; padding: 4px 12px; border-radius: 4px; cursor: pointer; flex: none;
+}
+.rail-collapse:hover { color: var(--hud-ink); }
+
+.rail-body { flex: 1; overflow-y: auto; padding: 18px; }
+.rail-body h3 {
+  margin: 22px 0 8px; font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--hud-accent); font-weight: 700;
+}
+.rail-body h3:first-child { margin-top: 0; }
+.rail-body p { margin: 0 0 10px; color: var(--hud-soft); line-height: 1.55; }
+.rail-body ol, .rail-body ul { margin: 0 0 12px; padding-left: 20px; color: var(--hud-soft); }
+.rail-body li { margin: 0 0 8px; line-height: 1.5; }
+
+.objective p { color: var(--hud-ink); }
+
+.rail-btn {
+  display: inline-block; width: 100%; text-align: center;
+  padding: 10px 16px; margin: 4px 0 10px; border-radius: var(--radius);
+  background: var(--hud-accent); color: #06231e; border: 1px solid var(--hud-accent);
+  font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.rail-btn:hover { background: #5fcbbc; color: #06231e; }
+.rail-btn.quiet { background: transparent; color: var(--hud-soft); border-color: var(--hud-line); font-weight: 400; }
+.rail-btn.quiet:hover { background: var(--hud-raise); color: var(--hud-ink); }
+.rail-btn:disabled { opacity: .5; cursor: default; }
+
+/* ------------------------------------------------------------------- submit */
+
+.submit { margin: 20px 0 0; padding: 16px; background: var(--hud-raise); border: 1px solid var(--hud-line); border-radius: 8px; }
+.submit label { display: block; font-size: 12px; letter-spacing: .8px; text-transform: uppercase; color: var(--hud-soft); margin: 0 0 7px; font-weight: 600; }
+.submit input[type=text] {
+  width: 100%; padding: 10px 12px; font: inherit; font-size: 15px;
+  background: var(--hud-bg); color: var(--hud-ink);
+  border: 1px solid var(--hud-line); border-radius: var(--radius); margin: 0 0 10px;
+}
+.submit input[type=text]:focus { outline: 2px solid var(--hud-accent); outline-offset: -1px; }
+.submit .result { margin: 6px 0 0; font-size: 14px; min-height: 1em; }
+.submit .result.good { color: var(--hud-accent); }
+.submit .result.bad { color: var(--hud-warn); }
+.submit .bonus { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--hud-line); font-size: 13.5px; }
+.submit .demo li b { color: var(--hud-ink); font-weight: 600; }
+
+/* -------------------------------------------------------------------- hints */
+
+.hints { margin: 20px 0 0; }
+.hint-list .hint {
+  background: var(--hud-raise); border-left: 2px solid var(--hud-warn);
+  padding: 10px 13px; margin: 0 0 8px; border-radius: 0 4px 4px 0; color: var(--hud-ink);
+}
+
+/* ------------------------------------------------------------------- reveal */
+
+.reveal {
+  margin: 24px 0 0; padding: 18px; border-radius: 8px;
+  background: var(--hud-raise); border: 1px solid #2c6055;
+}
+.reveal .answer-was { color: var(--hud-accent); font-family: var(--mono); font-size: 13.5px; }
+/* The caveat gets its own weight on purpose. It is not a disclaimer to be skimmed past — it is
+   the difference between teaching what happened and teaching a story about it. */
+.reveal .honestly {
+  border-left: 2px solid var(--hud-warn); padding: 8px 0 8px 12px;
+  color: var(--hud-ink); font-size: 13.5px;
+}
+.reveal .ask { color: var(--hud-ink); font-weight: 600; }
+.reveal .owasp { font-size: 12.5px; color: var(--hud-soft); font-family: var(--mono); margin-top: 12px; }
+
+/* ------------------------------------------------------------------- footer */
+
+.rail-foot { flex: none; padding: 12px 18px; border-top: 1px solid var(--hud-line); }
+.rail-foot a { color: var(--hud-soft); font-size: 13.5px; text-decoration: none; }
+.rail-foot a:hover { color: var(--hud-ink); }
+
+/* ------------------------------------------------------------------- reopen */
+
+.rail-reopen {
+  position: fixed; top: 50%; right: 0; transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl; z-index: 59;
+  background: var(--hud-bg); color: var(--hud-accent);
+  border: 1px solid var(--hud-line); border-right: none;
+  border-radius: 6px 0 0 6px; padding: 16px 9px;
+  font: inherit; font-size: 13px; letter-spacing: 1px; cursor: pointer;
+}
+.rail-reopen[hidden] { display: none; }
+.rail-reopen:hover { background: var(--hud-raise); }
+
+@media (max-width: 900px) {
+  .rail { width: 100%; }
+}

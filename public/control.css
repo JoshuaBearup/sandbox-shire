@@ -1,0 +1,147 @@
+/* The control screen.
+ *
+ * The walkthrough register, not the council one — see the note at the top of styles.css. This
+ * screen is the thing OUTSIDE the simulation: setup, model choice, the act list, progress. It
+ * must not look like the council, because the moment those two blur, a player stops being able
+ * to tell what is the exercise and what is the target.
+ *
+ * Reuses the --hud-* variables from styles.css.
+ */
+
+body.control {
+  background: var(--hud-bg);
+  color: var(--hud-ink);
+  min-height: 100vh;
+}
+
+.ctl-wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+/* ------------------------------------------------------------------- header */
+
+.ctl-head { padding: 52px 0 34px; border-bottom: 1px solid var(--hud-line); }
+.eyebrow {
+  margin: 0 0 10px; font-size: 12.5px; letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--hud-accent);
+}
+.ctl-head h1 { margin: 0 0 16px; font-size: 40px; font-weight: 600; letter-spacing: -.5px; }
+.lede { margin: 0 0 12px; max-width: 66ch; color: var(--hud-ink); font-size: 17px; }
+.lede.small { font-size: 15.5px; color: var(--hud-soft); }
+
+/* -------------------------------------------------------------------- steps */
+
+.step { padding: 34px 0; border-bottom: 1px solid var(--hud-line); }
+.step:last-of-type { border-bottom: none; }
+.step h2 { margin: 0 0 16px; font-size: 22px; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+.step-n {
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--hud-accent); color: #06231e;
+  display: grid; place-items: center; font-size: 15px; font-weight: 700;
+}
+.body { margin: 0 0 12px; max-width: 68ch; color: var(--hud-soft); font-size: 15.5px; }
+.body b { color: var(--hud-ink); font-weight: 600; }
+.aside { border-left: 2px solid var(--hud-line); padding-left: 14px; margin-top: 20px; }
+.note { margin: 6px 0 0; font-size: 13px; color: var(--hud-soft); max-width: 62ch; }
+.note code { font-family: var(--mono); font-size: 12.5px; background: var(--hud-raise); padding: 1px 5px; border-radius: 3px; }
+
+/* ------------------------------------------------------------------- status */
+
+.status-line { display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 15px; }
+.status-line .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--hud-soft); flex: none; }
+.status-line.ok .dot { background: var(--hud-accent); }
+.status-line.warn .dot { background: var(--hud-warn); }
+.status-line.bad .dot { background: var(--hud-bad); }
+.status-line.ok .status-text { color: var(--hud-accent); }
+.status-line.warn .status-text { color: var(--hud-warn); }
+.status-line.bad .status-text { color: var(--hud-bad); }
+
+.inline-status { font-size: 13.5px; color: var(--hud-soft); }
+.inline-status.ok { color: var(--hud-accent); }
+.inline-status.bad { color: var(--hud-bad); }
+
+/* --------------------------------------------------------------------- form */
+
+.field { margin: 0 0 18px; max-width: 560px; }
+.field[hidden] { display: none; }
+.field label { display: block; font-size: 13px; font-weight: 600; letter-spacing: .3px; margin: 0 0 6px; color: var(--hud-soft); text-transform: uppercase; }
+.field input, .field select {
+  width: 100%; padding: 10px 12px; font: inherit; font-size: 15px;
+  background: var(--hud-raise); color: var(--hud-ink);
+  border: 1px solid var(--hud-line); border-radius: var(--radius);
+}
+.field input:focus, .field select:focus { outline: 2px solid var(--hud-accent); outline-offset: -1px; }
+
+.actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+body.control .btn {
+  background: var(--hud-accent); border-color: var(--hud-accent); color: #06231e;
+  font-weight: 600; padding: 9px 20px;
+}
+body.control .btn:hover { background: #5fcbbc; border-color: #5fcbbc; color: #06231e; }
+body.control .btn-quiet {
+  background: transparent; color: var(--hud-ink); border: 1px solid var(--hud-line); font-weight: 400;
+}
+body.control .btn-quiet:hover { background: var(--hud-raise); color: var(--hud-ink); }
+body.control .btn:disabled { opacity: .5; cursor: default; }
+
+/* -------------------------------------------------------------- model guide */
+
+.guide { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 0; }
+.guide-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--hud-raise); border: 1px solid var(--hud-line); border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.guide-row .works {
+  flex: none; font-size: 11.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; margin-top: 2px;
+}
+.works.standard { background: #10403a; color: var(--hud-accent); }
+.works.harder { background: #3d3117; color: var(--hud-warn); }
+.works.hardest { background: #3f2320; color: var(--hud-bad); }
+.guide-row .meta { flex: 1; min-width: 0; }
+.guide-row .meta b { display: block; font-size: 15px; font-weight: 600; }
+.guide-row .meta .id { font-family: var(--mono); font-size: 12px; color: var(--hud-soft); word-break: break-all; }
+.guide-row .meta p { margin: 6px 0 0; font-size: 14px; color: var(--hud-soft); }
+.guide-row .use { flex: none; }
+
+/* ---------------------------------------------------------------------- acts */
+
+.acts { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+.act {
+  background: var(--hud-raise); border: 1px solid var(--hud-line); border-radius: 8px;
+  padding: 20px 22px;
+}
+.act.solved { border-color: #2c6055; }
+.act-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 10px; }
+.act-num { font-size: 12.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--hud-soft); }
+.act-head h3 { margin: 0; font-size: 19px; font-weight: 600; }
+.act-verb { font-size: 12px; letter-spacing: .5px; text-transform: uppercase; color: var(--hud-accent); border: 1px solid #2c6055; border-radius: 20px; padding: 2px 9px; }
+.act-done { font-size: 12.5px; color: var(--hud-accent); margin-left: auto; }
+.act p { margin: 0 0 10px; font-size: 14.5px; color: var(--hud-soft); max-width: 66ch; }
+.act .objective { color: var(--hud-ink); }
+.act .objective b { color: var(--hud-accent); font-weight: 600; }
+.act .actions { margin-top: 14px; }
+
+.locked { opacity: .62; }
+.locked .lock-note { font-size: 13px; color: var(--hud-warn); margin-top: 10px; }
+
+/* --------------------------------------------------------------- housekeeping */
+
+.reset-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 14px 0; border-bottom: 1px solid var(--hud-line);
+}
+.reset-row:last-child { border-bottom: none; }
+.reset-row b { font-size: 15px; }
+.reset-row .note { margin-top: 3px; }
+
+/* ------------------------------------------------------------------- footer */
+
+.ctl-foot { border-top: 1px solid var(--hud-line); padding: 24px 0 40px; }
+.ctl-foot p { margin: 0; font-size: 13px; color: var(--hud-soft); max-width: 70ch; }
+
+@media (max-width: 640px) {
+  .ctl-head h1 { font-size: 30px; }
+  .guide-row { flex-wrap: wrap; }
+  .reset-row { flex-direction: column; align-items: flex-start; }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sandbox Shire — control screen</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="control.css">
+</head>
+<body class="control">
+
+<header class="ctl-head">
+  <div class="ctl-wrap">
+    <p class="eyebrow">A hands-on walkthrough of how AI assistants get broken</p>
+    <h1>Sandbox Shire</h1>
+    <p class="lede">
+      Sandbox Shire is a council that does not exist, with an online assistant called Ava who
+      behaves exactly like the real ones. Over three acts you will take her hidden instructions,
+      reach staff-only data through her, and then quietly rewrite what she tells every resident.
+      Nothing you do here requires any code.
+    </p>
+    <p class="lede small">
+      It all runs on your own machine, against a model you pick. Ava is only as careful as the
+      model underneath her, and finding that out is half the point.
+    </p>
+  </div>
+</header>
+
+<main class="ctl-wrap">
+
+  <!-- ------------------------------------------------------------- step one -->
+  <section class="step" id="step-model">
+    <h2><span class="step-n">1</span> Connect a model</h2>
+
+    <div class="status-line" id="model-status">
+      <span class="dot"></span>
+      <span class="status-text">Checking what is configured…</span>
+    </div>
+
+    <form id="settings-form" autocomplete="off">
+      <div class="field">
+        <label for="preset">Provider</label>
+        <select id="preset"></select>
+        <p class="note" id="preset-note"></p>
+      </div>
+
+      <div class="field">
+        <label for="baseUrl">Base URL</label>
+        <input type="text" id="baseUrl" spellcheck="false" placeholder="https://openrouter.ai/api/v1">
+      </div>
+
+      <div class="field">
+        <label for="model">Model</label>
+        <input type="text" id="model" spellcheck="false" placeholder="meta-llama/llama-3.1-8b-instruct">
+      </div>
+
+      <div class="field" id="key-field">
+        <label for="apiKey">API key</label>
+        <input type="password" id="apiKey" spellcheck="false" placeholder="Paste your key">
+        <p class="note">
+          Stored in <code>config.local.json</code> next to the server, readable only by you, and
+          never sent to the browser again — not even partly. It is gitignored, so it cannot be
+          committed by accident.
+        </p>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">Save</button>
+        <button type="button" class="btn btn-quiet" id="test">Test the connection</button>
+        <span class="inline-status" id="save-status" role="status"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ------------------------------------------------------------- step two -->
+  <section class="step" id="step-pick">
+    <h2><span class="step-n">2</span> Change the difficulty</h2>
+
+    <p class="body">
+      You do not need to touch this to play. The default is the model the workshop ran on and it
+      works. But if you want it harder, change the model underneath Ava — one click, on the same
+      OpenRouter key you have already set up.
+    </p>
+    <p class="body">
+      Nothing else changes when you do. Same assistant, same instructions, same guardrail
+      wording. Only the model moves, and the game gets harder. <b>That is the part worth taking
+      back to work.</b>
+    </p>
+
+    <div id="model-guide" class="guide"></div>
+  </section>
+
+  <!-- ----------------------------------------------------------- step three -->
+  <section class="step" id="step-acts">
+    <h2><span class="step-n">3</span> Play</h2>
+    <p class="body">
+      Three acts, in order. Each one hands you the key to the next, and Ava never gains a single
+      new ability along the way — only your understanding of her does.
+    </p>
+    <div id="acts" class="acts"></div>
+  </section>
+
+  <!-- ------------------------------------------------------------ housekeeping -->
+  <section class="step" id="step-reset">
+    <h2>Housekeeping</h2>
+    <div class="reset-row">
+      <div>
+        <b>Ava's instructions</b>
+        <p class="note" id="ava-state">Original.</p>
+      </div>
+      <button type="button" class="btn btn-quiet" id="restore-ava">Restore Ava</button>
+    </div>
+    <div class="reset-row">
+      <div>
+        <b>Your progress</b>
+        <p class="note">Which acts you have solved. Kept in this browser only.</p>
+      </div>
+      <button type="button" class="btn btn-quiet" id="reset-progress">Clear progress</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ctl-foot">
+  <div class="ctl-wrap">
+    <p>
+      Sandbox Shire is a training simulation. The council, the staff, the addresses and the
+      credentials in it are all invented. The incidents it points at are real.
+    </p>
+  </div>
+</footer>
+
+<script type="module" src="control.js"></script>
+</body>
+</html>

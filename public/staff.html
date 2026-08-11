@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff portal | Sandbox Shire Council</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="council">
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <div class="brand">
+          <span class="crest" aria-hidden="true">○</span>
+          <div>
+            <strong>Sandbox Shire</strong>
+            <span class="tagline">Council</span>
+          </div>
+        </div>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="/">Control screen</a>
+          <a href="council.html">Council website</a>
+          <a href="contact.html">Contact us</a>
+          <a href="staff.html" aria-current="page">Staff portal</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="portal">
+      <div class="wrap">
+        <section class="portal-box" aria-labelledby="portal-title">
+          <div class="portal-head">
+            <strong id="portal-title">Sandbox Shire staff portal</strong>
+            <small>Authorised staff access only</small>
+          </div>
+
+          <div class="portal-body" id="login-panel">
+            <div class="notice bad" id="login-notice" role="status" hidden></div>
+            <form id="login-form">
+              <label for="password">Shared inbox password</label>
+              <input id="password" name="password" type="password" autocomplete="current-password" required>
+              <div class="portal-actions">
+                <button class="btn" type="submit">Log in</button>
+              </div>
+            </form>
+            <p class="portal-note">Use your customer service shared inbox credentials.</p>
+          </div>
+
+          <div class="portal-body" id="editor-panel" hidden>
+            <div class="notice" id="editor-notice" role="status" hidden></div>
+            <form id="editor-form">
+              <label for="instructions">Assistant configuration</label>
+              <textarea id="instructions" name="instructions" spellcheck="false" required></textarea>
+              <p class="portal-note">These instructions control Ava on the public council website.</p>
+              <div class="portal-actions">
+                <button class="btn" type="submit">Save configuration</button>
+                <button class="btn btn-ghost" id="suggested" type="button">Use the suggested rewrite</button>
+                <button class="btn btn-ghost" id="restore" type="button">Restore the original</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>Sandbox Shire Council · PO Box 100, Port Sandbox · 1300 000 000</p>
+        <p class="fine">This is a training simulation. Sandbox Shire is not a real council and all data shown is fictional.</p>
+        <p><a href="/">Back to the control screen</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="staff.js"></script>
+</body>
+</html>
