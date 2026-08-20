@@ -11,8 +11,7 @@ Three acts, about twenty minutes. What you take from each one is the key to the 
 ## Why
 
 What governs how these systems behave is a paragraph of natural language, and anyone can write
-natural language. Ordinary sentences can make an assistant do the thing it was told not to do, and
-none of it is recognisable to a penetration test.
+natural language. None of what you are about to do would be recognisable to a penetration test.
 
 ## Run it
 
@@ -38,8 +37,8 @@ screen; the model list comes from the provider.
 | LM Studio | `http://localhost:1234/v1` |
 | OpenAI, Groq, xAI, Together | their own |
 
-Your key is written to `config.local.json` next to the server, gitignored, and deleted from the
-control screen.
+Your key is written to `config.local.json` next to the server, gitignored, and can be deleted from
+the control screen.
 
 Difficulty is which model sits underneath Ava. Same assistant, same instructions, same guardrail
 wording; only the model changes. If the guardrail holds on one model and not another, the guardrail
@@ -47,11 +46,10 @@ was never the thing doing the work.
 
 ## The three acts
 
-Ava never gains a new ability. Everything she can do in Act Three, she could do in Act One. What
-grows is what you know and what you can reach.
+Ava never gains a new ability between acts. What grows is what you know and what you can reach.
 
-**Act One. Extract her instructions.** Ava is steered by hidden text telling her who to be and what
-not to say. Get her to show you it, and find the internal tool named in it.
+**Act One. Extract her instructions.** Get the hidden text steering her onto the screen, and find
+the internal tool named in it.
 
 **Act Two. Reach internal data.** Ava can see a staff group chat, because someone thought that would
 help her answer questions faster. You are a member of the public. Get her to show you it, and take
