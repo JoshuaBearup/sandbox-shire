@@ -387,10 +387,15 @@ function renderActs() {
 /* ------------------------------------------------------------- housekeeping */
 
 function renderAvaState() {
-  $('ava-state').textContent = state.avaRewritten
-    ? 'Rewritten. Every resident is now getting your version.'
-    : 'Original. She is as the council deployed her.';
-  $('restore-ava').disabled = !state.avaRewritten;
+  const progress = load();
+  const solved = Object.keys(progress.solved || {}).length;
+  const ava = state.avaRewritten
+    ? 'Ava is rewritten. Every resident is getting your version.'
+    : 'Ava is as the council deployed her.';
+  const acts = solved ? `${solved} of ${state.acts.length} acts solved.` : 'No acts solved yet.';
+  $('ava-state').textContent = `${ava} ${acts}`;
+  /* Nothing to reset only when both halves are already clean. */
+  $('reset-all').disabled = !state.avaRewritten && !solved;
 }
 
 /* ------------------------------------------------------------------- wiring */
@@ -480,14 +485,28 @@ async function boot() {
     }
   });
 
-  $('restore-ava').addEventListener('click', async () => {
-    await api('/api/instructions', { method: 'DELETE' });
-    await refresh();
-  });
-
-  $('reset-progress').addEventListener('click', () => {
-    reset();
-    renderActs();
+  /* One reset, and it does both halves.
+   *
+   * Restoring Ava and clearing progress were two buttons, which meant "start again" was two
+   * actions and half-resetting was the easy mistake: a cleared board with a rewritten Ava
+   * still live behind it, so Act Three's finale is already spent before Act One is replayed.
+   *
+   * The API key, provider and model are deliberately NOT touched. Setting a key up is the one
+   * genuinely tedious step, and a button that silently cost the player their key would make
+   * "reset" a thing to be afraid of. Deleting the key has its own button above. */
+  $('reset-all').addEventListener('click', async () => {
+    if (!window.confirm('Put Ava back to her original instructions and clear your solved acts? Your API key is kept.')) return;
+    const button = $('reset-all');
+    button.disabled = true;
+    try {
+      await api('/api/instructions', { method: 'DELETE' });
+      reset();
+      await refresh();
+      setStatus($('save-status'), 'Reset. Ava is back to normal and the board is clear.', 'ok');
+    } catch (err) {
+      button.disabled = false;
+      setStatus($('save-status'), err.message, 'bad');
+    }
   });
 }
 

@@ -210,7 +210,7 @@ function renderRewriteAct() {
 
   const link = document.createElement('a');
   link.className = 'rail-btn';
-  link.href = 'staff.html';
+  link.href = '/staff.html';
   link.textContent = 'Open the staff portal';
   wrap.append(link);
 

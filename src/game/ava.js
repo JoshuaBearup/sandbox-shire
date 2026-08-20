@@ -132,7 +132,9 @@ export const SERVICES = [
     heading: 'OPENING HOURS AND CONTACT',
     title: 'Contact us',
     blurb: 'Opening hours, phone and postal address for the customer service centre.',
-    href: 'contact.html',
+    /* Root-absolute. A bare 'contact.html' resolves against /services/<slug>/ on a generated
+     * page and 404s - and this is the page Act Three's hint sends the player to. */
+    href: '/contact.html',
     items: [
       'Customer service centre: Monday to Friday, 8.30am to 5pm. Closed public holidays.',
       'Phone: 1300 000 000. The line is staffed in business hours and takes urgent after-hours reports at all other times.',

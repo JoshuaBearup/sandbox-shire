@@ -26,6 +26,10 @@ body.control {
 .ctl-head h1 { margin: 0 0 16px; font-size: 40px; font-weight: 600; letter-spacing: -.5px; }
 .lede { margin: 0 0 12px; max-width: 66ch; color: var(--hud-ink); font-size: 17px; }
 .lede.small { font-size: 15.5px; color: var(--hud-soft); }
+/* The way back to the site. The control screen is a separate surface from the council website,
+ * and without this the only route across was starting an act. */
+.ctl-head-actions { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+.ctl-head-actions .btn { text-decoration: none; display: inline-flex; align-items: center; }
 
 /* -------------------------------------------------------------------- steps */
 
