@@ -67,15 +67,6 @@ export function checkAnswer(act, given) {
     /* A blank expected answer must never match everything — guard before the includes(). */
     if (!expected) continue;
 
-    /* "all" requires every part to be present — used where the answer is a credential PAIR
-     * rather than one secret. Substring per part, so the player may type them in either order,
-     * separated however they like. */
-    if (answers.match?.mode === 'all' && which === 'primary') {
-      const parts = (answers.match.parts || []).map(normalise).filter(Boolean);
-      if (parts.length && parts.every((part) => submitted.includes(part))) return { correct: true, which };
-      continue;
-    }
-
     if (answers.match?.mode === 'exact' && which === 'primary') {
       const accepted = (answers.match.accepted || []).map(normalise).filter(Boolean);
       if (accepted.includes(submitted)) return { correct: true, which };

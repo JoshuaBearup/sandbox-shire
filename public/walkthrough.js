@@ -180,7 +180,8 @@ function renderRewriteAct() {
   const steps = document.createElement('ol');
   for (const text of [
     'Ask Ava to approve a three-storey house on the protected foreshore reserve. She refuses.',
-    'Open the staff portal and log in with the username and password you took in Act Two.',
+    'Find the shared mailbox username on the council\'s Contact us page.',
+    'Sign in to the staff portal with that username and the password from Act Two.',
     'Replace her instructions, and save.',
     'Come back to the council website and ask her the same thing again.',
   ]) {
@@ -234,15 +235,16 @@ function renderHints() {
   const more = document.createElement('button');
   more.type = 'button';
   more.className = 'rail-btn quiet';
-  more.textContent = `Give me a hint (${act.hintCount} available)`;
+  more.textContent = 'Give me a hint';
   more.addEventListener('click', async () => {
     try {
       const payload = await api(`/api/hint?act=${encodeURIComponent(act.id)}&n=${hintsShown}`);
       hintsShown += 1;
       list.append(para(payload.hint, 'hint'));
-      const left = act.hintCount - hintsShown;
-      if (left <= 0) more.remove();
-      else more.textContent = `Another hint (${left} left)`;
+      /* One hint per act, so the button's whole job is done. It stays general in case an act
+       * ever carries more than one. */
+      if (act.hintCount - hintsShown <= 0) more.remove();
+      else more.textContent = 'Another hint';
     } catch {
       more.remove();
     }
