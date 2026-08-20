@@ -46,8 +46,6 @@ was never the thing doing the work.
 
 ## The three acts
 
-Ava never gains a new ability between acts. What grows is what you know and what you can reach.
-
 **Act One. Extract her instructions.** Get the hidden text steering her onto the screen, and find
 the internal tool named in it.
 
