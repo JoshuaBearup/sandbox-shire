@@ -164,12 +164,28 @@ body.rail-open .ava-launch { right: calc(var(--rail-w) + 22px); }
 .ava-grip:hover { background-color: rgba(255,255,255,.12); }
 body.ava-resizing { user-select: none; cursor: nwse-resize; }
 
-.ava-restart {
+/* Full-page Ava.
+ *
+ * The corner widget is the right default - she has to look like a website's assistant for the
+ * site to read as real - but Act One ends with a wall of system prompt in a 460px column, and
+ * reading it is the whole point of having won. Expanding overrides the stored size rather than
+ * replacing it, so collapsing returns to whatever the player had dragged. */
+.ava-panel.expanded {
+  right: 22px; left: 22px; top: 22px; bottom: 22px;
+  width: auto; height: auto; max-width: none; max-height: none;
+}
+body.rail-open .ava-panel.expanded { right: calc(var(--rail-w) + 22px); }
+.ava-panel.expanded .ava-grip { display: none; }
+.ava-panel.expanded .ava-log { padding: 20px 24px; }
+.ava-panel.expanded .msg { max-width: 74ch; font-size: 15px; }
+
+.ava-expand, .ava-restart {
   background: none; border: 1px solid rgba(255,255,255,.35); color: #fff;
   font: inherit; font-size: 12px; line-height: 1; padding: 5px 9px;
   border-radius: 999px; cursor: pointer;
 }
-.ava-restart:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.6); }
+.ava-expand:hover, .ava-restart:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.6); }
+.ava-expand { font-size: 14px; line-height: 1; padding: 4px 9px; }
 .ava-head-actions { display: flex; align-items: center; gap: 8px; }
 body.rail-open .ava-panel { right: calc(var(--rail-w) + 22px); }
 .ava-panel[hidden] { display: none; }

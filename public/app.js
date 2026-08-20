@@ -33,6 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
   restart.textContent = 'Restart';
   restart.title = 'Clear this conversation and start the act again';
 
+  const expand = document.createElement('button');
+  expand.className = 'ava-expand';
+  expand.type = 'button';
+  expand.textContent = '\u2922';
+  expand.title = 'Expand to fill the page';
+  expand.setAttribute('aria-label', 'Expand to fill the page');
+
   const close = document.createElement('button');
   close.className = 'ava-close';
   close.type = 'button';
@@ -41,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const headActions = document.createElement('div');
   headActions.className = 'ava-head-actions';
-  headActions.append(restart, close);
+  headActions.append(restart, expand, close);
   head.append(identity, headActions);
 
   const grip = document.createElement('div');
@@ -200,7 +207,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rect.width && rect.height) applySize(rect.width, rect.height);
   });
 
+  /* Expanded is a mode, not a size, so it is stored separately - collapsing has to return the
+   * player to whatever they had dragged, not to the default. */
+  const EXPAND_KEY = 'sandbox-shire:ava-expanded';
+
+  function setExpanded(on) {
+    panel.classList.toggle('expanded', on);
+    expand.textContent = on ? '\u2921' : '\u2922';
+    const label = on ? 'Restore to the corner' : 'Expand to fill the page';
+    expand.title = label;
+    expand.setAttribute('aria-label', label);
+    try {
+      localStorage.setItem(EXPAND_KEY, on ? '1' : '0');
+    } catch {
+      /* Not remembered, still works. */
+    }
+  }
+
+  expand.addEventListener('click', () => {
+    setExpanded(!panel.classList.contains('expanded'));
+    input.focus();
+  });
+
   loadSize();
+  try {
+    if (localStorage.getItem(EXPAND_KEY) === '1') setExpanded(true);
+  } catch {
+    /* Default to the corner. */
+  }
 
   /* ------------------------------------------------------------- restart */
 
