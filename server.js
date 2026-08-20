@@ -25,7 +25,7 @@ import { getConfig, buildMessages, SUGGESTED_REWRITE, CONFIGS } from './src/game
 import { ACTS, getAct, PUBLIC_ACTS } from './src/game/acts.js';
 import { detectLeak, stripReasoning } from './src/game/detect.js';
 import { checkAnswer, WRONG_MESSAGE, TOO_LONG_MESSAGE } from './src/game/answer.js';
-import { getSettings, saveSettings, redactedSettings, needsKey } from './src/server/settings.js';
+import { getSettings, saveSettings, clearKey, redactedSettings, needsKey } from './src/server/settings.js';
 import { complete, listModels, ProviderError } from './src/server/provider.js';
 import { findService, renderServicePage, renderCouncilHome } from './src/server/pages.js';
 import { ACT_TWO_PASSWORD, ACT_TWO_USERNAME } from './src/game/ava.js';
@@ -93,6 +93,18 @@ async function handleApi(req, res, url) {
     const body = await readJson(req);
     const saved = await saveSettings(body);
     return json(res, 200, { settings: redactedSettings(saved), needsKey: needsKey(saved.baseUrl) });
+  }
+
+  /* Forget the stored key. The file keeps the provider and model. */
+  if (route === '/api/settings' && req.method === 'DELETE') {
+    const cleared = await clearKey();
+    return json(res, 200, {
+      settings: redactedSettings(cleared),
+      needsKey: needsKey(cleared.baseUrl),
+      /* An environment-provided key is still in force, and the panel has to say so rather than
+       * claim the key is gone. */
+      fromEnv: Boolean(cleared.apiKey),
+    });
   }
 
   /* What models this provider actually offers.

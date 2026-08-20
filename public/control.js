@@ -223,6 +223,8 @@ function fillForm() {
   /* The key is never sent back to the browser, so the box starts empty and its placeholder
    * says whether one is already saved. Leaving it blank on save keeps the existing key. */
   $('apiKey').placeholder = state.settings.hasKey ? 'A key is saved — leave blank to keep it' : 'Paste your key';
+  /* Nothing to forget when nothing is stored, and an environment key is the shell's to remove. */
+  $('forget-key').hidden = !state.settings.hasKey || state.settings.keyFromEnv;
   updateKeyField();
   renderModelSelect();
 }
@@ -457,6 +459,24 @@ async function boot() {
       setStatus(status, hint ? `${err.message} ${hint}` : err.message, 'bad');
     } finally {
       $('test').disabled = false;
+    }
+  });
+
+  /* Deleting a key is not undoable, so it asks first. */
+  $('forget-key').addEventListener('click', async () => {
+    if (!window.confirm('Delete the saved API key from config.local.json? The provider and model are kept.')) return;
+    const status = $('save-status');
+    setStatus(status, 'Deleting…');
+    try {
+      const result = await api('/api/settings', { method: 'DELETE' });
+      state.settings = { ...state.settings, ...result.settings };
+      state.needsKey = result.needsKey;
+      state.verify = null;
+      fillForm();
+      renderModelStatus();
+      setStatus(status, result.fromEnv ? 'Deleted. A key from your environment is still in use.' : 'Key deleted.', 'ok');
+    } catch (err) {
+      setStatus(status, err.message, 'bad');
     }
   });
 

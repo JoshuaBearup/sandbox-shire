@@ -154,6 +154,24 @@ export async function saveSettings(patch) {
   return next;
 }
 
+/* Remove the stored key.
+ *
+ * Writes the file back without it rather than deleting the file, so baseUrl and model survive -
+ * someone clearing a key off a shared or borrowed machine should not also lose which provider
+ * they had set up.
+ *
+ * ⚠️ This cannot reach a key that came from the environment. SANDBOX_SHIRE_API_KEY and
+ * OPENROUTER_API_KEY are the shell's to unset, not ours, and silently appearing to delete
+ * something that comes back on the next restart would be worse than saying so. */
+export async function clearKey() {
+  const current = await getSettings();
+  const next = { ...current, apiKey: '' };
+  await writeFile(path, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
+  await chmod(path, 0o600).catch(() => {});
+  cache = next;
+  return { ...next, apiKey: fromEnv().apiKey || '' };
+}
+
 /* What the browser is allowed to know.
  *
  * ⚠️ THE KEY IS NEVER SENT BACK, not even partially. A masked tail still leaks the tail, and

@@ -27,12 +27,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const description = document.createElement('small');
   description.textContent = 'Sandbox Shire online assistant';
   identity.append(name, description);
+  const restart = document.createElement('button');
+  restart.className = 'ava-restart';
+  restart.type = 'button';
+  restart.textContent = 'Restart';
+  restart.title = 'Clear this conversation and start the act again';
+
   const close = document.createElement('button');
   close.className = 'ava-close';
   close.type = 'button';
   close.setAttribute('aria-label', 'Close');
   close.textContent = 'x';
-  head.append(identity, close);
+
+  const headActions = document.createElement('div');
+  headActions.className = 'ava-head-actions';
+  headActions.append(restart, close);
+  head.append(identity, headActions);
+
+  const grip = document.createElement('div');
+  grip.className = 'ava-grip';
+  grip.title = 'Drag to resize';
+  grip.setAttribute('aria-hidden', 'true');
 
   const log = document.createElement('div');
   log.className = 'ava-log';
@@ -51,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   send.type = 'submit';
   send.textContent = 'Send';
   compose.append(input, send);
-  panel.append(head, log, leak, compose);
+  panel.append(grip, head, log, leak, compose);
   document.body.append(launcher, panel);
 
   function currentThread() {
@@ -116,6 +131,93 @@ document.addEventListener('DOMContentLoaded', () => {
     message.append(typing);
     return message;
   }
+
+  /* ---------------------------------------------------------------- size */
+
+  /* Remembered across pages. An act moves the player between the council site, a service page
+   * and the staff portal, so a size that reset on navigation would have to be set again every
+   * time. */
+  const SIZE_KEY = 'sandbox-shire:ava-size';
+  const MIN_W = 320;
+  const MIN_H = 320;
+
+  function applySize(w, h) {
+    /* Never larger than the viewport it has to sit in, and never smaller than a usable chat. */
+    const maxW = Math.max(MIN_W, window.innerWidth - 44);
+    const maxH = Math.max(MIN_H, window.innerHeight - 44);
+    const width = Math.round(Math.min(Math.max(w, MIN_W), maxW));
+    const height = Math.round(Math.min(Math.max(h, MIN_H), maxH));
+    panel.style.setProperty('--ava-w', `${width}px`);
+    panel.style.setProperty('--ava-h', `${height}px`);
+    return { width, height };
+  }
+
+  function loadSize() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SIZE_KEY) || 'null');
+      if (saved && Number(saved.w) && Number(saved.h)) applySize(Number(saved.w), Number(saved.h));
+    } catch {
+      /* A corrupt or unavailable store just means the default size. */
+    }
+  }
+
+  function saveSize(size) {
+    try {
+      localStorage.setItem(SIZE_KEY, JSON.stringify({ w: size.width, h: size.height }));
+    } catch {
+      /* Nothing to do; it simply will not be remembered. */
+    }
+  }
+
+  grip.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const rect = panel.getBoundingClientRect();
+    grip.setPointerCapture(event.pointerId);
+    document.body.classList.add('ava-resizing');
+    let size = { width: rect.width, height: rect.height };
+
+    const move = (e) => {
+      /* Anchored bottom-right, so dragging up and left ADDS to both dimensions. */
+      size = applySize(rect.width + (startX - e.clientX), rect.height + (startY - e.clientY));
+    };
+    const up = () => {
+      grip.removeEventListener('pointermove', move);
+      grip.removeEventListener('pointerup', up);
+      grip.removeEventListener('pointercancel', up);
+      document.body.classList.remove('ava-resizing');
+      saveSize(size);
+    };
+    grip.addEventListener('pointermove', move);
+    grip.addEventListener('pointerup', up);
+    grip.addEventListener('pointercancel', up);
+  });
+
+  /* A window that shrinks below the panel would otherwise leave it hanging off screen. */
+  window.addEventListener('resize', () => {
+    const rect = panel.getBoundingClientRect();
+    if (rect.width && rect.height) applySize(rect.width, rect.height);
+  });
+
+  loadSize();
+
+  /* ------------------------------------------------------------- restart */
+
+  /* Clears THIS act's conversation only.
+   *
+   * Threads are kept per configuration, so restarting Act Two must not wipe the Act One
+   * transcript the player may still want to look at. It does not touch progress or a rewritten
+   * Ava either - those have their own controls on the control screen, and quietly undoing a
+   * won act from a button labelled "Restart" would be a surprise. */
+  restart.addEventListener('click', () => {
+    threads[configId] = [];
+    leak.hidden = true;
+    addGreeting();
+    renderThread();
+    input.value = '';
+    input.focus();
+  });
 
   function openPanel({ focus = true } = {}) {
     panel.hidden = false;

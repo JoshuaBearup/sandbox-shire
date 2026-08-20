@@ -138,13 +138,39 @@ a.card:hover .card-more { text-decoration: underline; }
 .ava-launch:hover { background: var(--civic-800); }
 body.rail-open .ava-launch { right: calc(var(--rail-w) + 22px); }
 
+/* Size lives in custom properties so the drag handle can write to them and localStorage can
+ * restore them. The player crosses several pages during an act, and a panel that snapped back
+ * to default on every navigation would be worse than one that never resized. */
 .ava-panel {
   position: fixed; right: 22px; bottom: 22px; z-index: 41;
-  width: 380px; max-width: calc(100vw - 44px); height: 540px; max-height: calc(100vh - 44px);
+  --ava-w: 460px; --ava-h: 660px;
+  width: var(--ava-w); max-width: calc(100vw - 44px);
+  height: var(--ava-h); max-height: calc(100vh - 44px);
   background: #fff; border: 1px solid var(--line); border-radius: 10px;
   box-shadow: 0 12px 40px rgba(0,0,0,.24);
   display: flex; flex-direction: column; overflow: hidden;
 }
+
+/* The grip sits at the top-left because the panel is anchored bottom-right: dragging away
+ * from the anchor grows it, which is the direction the hand expects. */
+.ava-grip {
+  position: absolute; top: 0; left: 0; width: 20px; height: 20px;
+  cursor: nwse-resize; z-index: 2; touch-action: none;
+  background:
+    linear-gradient(135deg, transparent 45%, rgba(255,255,255,.55) 45%, rgba(255,255,255,.55) 55%, transparent 55%),
+    linear-gradient(135deg, transparent 65%, rgba(255,255,255,.55) 65%, rgba(255,255,255,.55) 75%, transparent 75%);
+  border-top-left-radius: 10px;
+}
+.ava-grip:hover { background-color: rgba(255,255,255,.12); }
+body.ava-resizing { user-select: none; cursor: nwse-resize; }
+
+.ava-restart {
+  background: none; border: 1px solid rgba(255,255,255,.35); color: #fff;
+  font: inherit; font-size: 12px; line-height: 1; padding: 5px 9px;
+  border-radius: 999px; cursor: pointer;
+}
+.ava-restart:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.6); }
+.ava-head-actions { display: flex; align-items: center; gap: 8px; }
 body.rail-open .ava-panel { right: calc(var(--rail-w) + 22px); }
 .ava-panel[hidden] { display: none; }
 
