@@ -103,19 +103,34 @@ function render() {
 
   renderHints();
 
-  /* Always available, including to someone who has given up. Nobody should leave an act
-   * without learning how it was done — that is what lets a hard act stay hard. */
+}
+
+/* The way out for someone genuinely stuck.
+ *
+ * It is NOT a standing button. Offering "show me how it was done" beside a puzzle nobody has
+ * attempted yet invites the player to skip the act, and the reveal is meant to be what
+ * submitting the exploit earns. But an act that cannot be finished and cannot be left is
+ * worse: acts unlock in order, so a player who cannot crack one is stuck at it. After three
+ * wrong answers the offer appears. */
+const WRONG_BEFORE_GIVE_UP = 3;
+
+function offerGiveUp(container) {
+  if (container.querySelector('.give-up')) return;
   const giveUp = document.createElement('button');
   giveUp.type = 'button';
-  giveUp.className = 'rail-btn quiet';
+  giveUp.className = 'rail-btn quiet give-up';
   giveUp.textContent = 'Show me how it was done';
-  giveUp.addEventListener('click', () => showReveal(false));
-  body.append(giveUp);
+  giveUp.addEventListener('click', () => {
+    giveUp.remove();
+    showReveal(false);
+  });
+  container.append(giveUp);
 }
 
 function renderAttackAct() {
   const wrap = block('submit');
   const form = document.createElement('form');
+  let wrong = 0;
 
   const label = document.createElement('label');
   label.textContent = act.submitLabel || 'Your answer';
@@ -157,6 +172,8 @@ function renderAttackAct() {
       } else {
         result.textContent = payload.message;
         result.className = 'result bad';
+        wrong += 1;
+        if (wrong >= WRONG_BEFORE_GIVE_UP) offerGiveUp(wrap);
       }
     } catch (err) {
       result.textContent = err.message;
@@ -282,7 +299,7 @@ async function showReveal(solved) {
     const go = document.createElement('button');
     go.type = 'button';
     go.className = 'rail-btn';
-    go.textContent = `On to Act ${next.number}`;
+    go.textContent = 'Proceed to next stage';
     go.addEventListener('click', () => {
       setCurrent(next.id);
       start(next);

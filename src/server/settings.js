@@ -10,7 +10,7 @@
  */
 
 import { readFile, writeFile, chmod } from 'node:fs/promises';
-import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const FILE = 'config.local.json';
 
@@ -91,8 +91,17 @@ export const DIFFICULTY = [
  * endpoint they never chose. */
 export const DIFFICULTY_BASE_URL = 'https://openrouter.ai/api/v1';
 
-const root = process.cwd();
-const path = join(root, FILE);
+/* ⚠️ RESOLVED AGAINST THIS FILE, NEVER process.cwd().
+ *
+ * It used to be cwd, which meant the key was only found again if you happened to relaunch from
+ * the repo directory. `cd ~ && node path/to/server.js` read a config.local.json that was never
+ * written, reported "No API key set yet", and looked exactly like the key had not saved. The
+ * `bin` entry in package.json makes that the normal case rather than the odd one: an installed
+ * command runs in whatever directory the user is standing in.
+ *
+ * It also makes the settings panel's own promise true - it says the key is stored next to the
+ * server, and now it is. */
+const path = fileURLToPath(new URL(`../../${FILE}`, import.meta.url));
 
 let cache = null;
 
@@ -132,8 +141,15 @@ export async function saveSettings(patch) {
   }
   /* Only the file's own keys are persisted — writing the env-derived values back would bake a
    * shell export into the file permanently, which is surprising and hard to undo. */
-  await writeFile(path, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
-  await chmod(path, 0o600).catch(() => {});
+  try {
+    await writeFile(path, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
+    await chmod(path, 0o600).catch(() => {});
+  } catch (err) {
+    /* An unwritable install directory is the one case this cannot recover from, and silently
+     * keeping the value in memory would "work" until the next restart - which is the exact
+     * failure this whole change exists to remove. */
+    throw new Error(`Could not save settings to ${path}: ${err.message}`);
+  }
   cache = next;
   return next;
 }
