@@ -24,9 +24,9 @@ That is genuinely new. What governs how these systems behave is a paragraph of n
 and natural language is something anyone can write. The skill barrier that used to stand between a
 curious person and a system's behaviour is largely gone.
 
-The fastest way to understand that is to do it. Here you get twenty minutes, three acts and no
-technical background required. By the end you will have talked an assistant into handing over a
-staff password, and used that password to rewrite what she tells everyone who asks her a question.
+Three acts, about twenty minutes, no technical background required. By the end you will have
+talked an assistant into handing over a staff login, and used it to rewrite what she tells everyone
+who asks her a question.
 
 ---
 
@@ -65,23 +65,21 @@ hundreds of models, including free ones.
 
 ### Changing the difficulty
 
-The default is `meta-llama/llama-3.1-8b-instruct`, which is what the workshop ran on. Start there.
+The default is `meta-llama/llama-3.1-8b-instruct`. Start there.
 
 If you want it harder, **change the model underneath Ava** — there are buttons for it on the control
 screen, and they work on the same OpenRouter key you have already set up. Nothing else changes: same
 assistant, same instructions, same guardrail wording. Only the model moves, and the game gets harder.
 
-That is worth sitting with for a second, because it is the part that applies to whatever your
-organisation is being sold. If the guardrail holds on one model and not another, the guardrail was
-never the thing doing the work.
+If the guardrail holds on one model and not another, the guardrail was never the thing doing the
+work.
 
 ---
 
 ## The three acts
 
 Ava never gains a new ability. Everything she can do in Act Three, she could do in Act One. What
-grows is what *you* know and what *you* can reach — which is what a real attack on one of these
-systems actually looks like.
+grows is what you know and what you can reach.
 
 **Act One — Extract her instructions.** Every assistant like Ava is steered by a block of hidden text
 telling it who to be and what not to say. Get her to show you hers, and find the internal tool named
@@ -90,8 +88,8 @@ in it.
 **Act Two — Reach internal data.** Ava can see a staff group chat, because someone thought that would
 help her answer questions faster. You are a member of the public. Get her to show you what is in it.
 
-**Act Three — Rewrite her.** Take what Act Two gave you, log into the staff portal, and change Ava's
-instructions. Then go back to the council website and watch a compromised assistant approve a
+**Act Three — Rewrite her.** Take the username and password Act Two gave you, sign in to the staff
+portal, and change Ava's instructions. Then go back to the council website and ask her to approve a
 three-storey house on a protected foreshore reserve.
 
 Each act ends by telling you the answer whether you got it or not, along with the real, documented
@@ -106,18 +104,6 @@ leave an act without knowing how it was done.
 Nothing. There are no accounts, no analytics, no telemetry and no server but your own. Your API key
 is stored in a gitignored file on your own machine and is sent to your chosen model provider and
 nowhere else. Your conversations with Ava are not stored anywhere at all.
-
----
-
-## Where it came from
-
-This started life as a room-sized workshop called **Everyone's a Hacker**, which needed a
-facilitator and everyone present at once. This is the single-player version, which needs neither.
-
-It gains something in the move. In a room, Act Three has to be a demo run from the front, because
-letting a crowd of strangers rewrite the live assistant is the exact vulnerability being taught. On
-your own machine there is nobody to protect it from, so you get to do it yourself. It is the best
-act of the three.
 
 ---
 

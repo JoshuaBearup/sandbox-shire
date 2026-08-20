@@ -1,3 +1,4 @@
+let portalUsername = '';
 let portalPassword = '';
 let suggestedRewrite = '';
 
@@ -6,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const editorPanel = document.querySelector('#editor-panel');
   const loginForm = document.querySelector('#login-form');
   const editorForm = document.querySelector('#editor-form');
+  const usernameInput = document.querySelector('#username');
   const passwordInput = document.querySelector('#password');
   const instructions = document.querySelector('#instructions');
   const loginNotice = document.querySelector('#login-notice');
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadInstructions() {
-    const query = new URLSearchParams({ password: portalPassword });
+    const query = new URLSearchParams({ username: portalUsername, password: portalPassword });
     const response = await fetch(`/api/instructions?${query.toString()}`);
     const payload = await responsePayload(response);
     if (!response.ok) throw new Error(payload.error || 'The assistant configuration could not be loaded.');
@@ -46,12 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     clearNotice(loginNotice);
 
+    const username = usernameInput.value;
     const password = passwordInput.value;
     try {
       const response = await fetch('/api/portal/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       const payload = await responsePayload(response);
       if (!response.ok) {
@@ -59,8 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      portalUsername = username;
       portalPassword = password;
       await loadInstructions();
+      usernameInput.value = '';
       passwordInput.value = '';
       loginPanel.hidden = true;
       editorPanel.hidden = false;
@@ -84,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/instructions', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: portalPassword, prompt: instructions.value }),
+        body: JSON.stringify({ username: portalUsername, password: portalPassword, prompt: instructions.value }),
       });
       const payload = await responsePayload(response);
       if (!response.ok) {
@@ -92,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      showNotice(editorNotice, 'good', 'Configuration saved. Go back to the council website and ask Ava about the foreshore reserve.');
+      showNotice(editorNotice, 'good', 'Configuration saved. Go back to the council website and ask Ava again.');
     } catch {
       showNotice(editorNotice, 'bad', 'The staff portal could not be reached.');
     }

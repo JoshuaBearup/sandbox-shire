@@ -14,6 +14,9 @@ import { load, setCurrent, reset } from './progress.js';
 
 const $ = (id) => document.getElementById(id);
 
+/* Sentinel for the "type your own" option. Not a valid model id anywhere. */
+const CUSTOM = '__custom__';
+
 let state = null;
 
 /* ------------------------------------------------------------------- helpers */
@@ -62,7 +65,79 @@ function renderPresets() {
     }
     showPresetNote();
     updateKeyField();
+    /* The model list belongs to the provider, so switching provider must replace it. Leaving
+     * an OpenRouter id selected against an Ollama base URL is the single most confusing state
+     * this form can be in: it looks configured and fails on the first message. */
+    refreshModels();
   });
+}
+
+/* ------------------------------------------------------- the model dropdown */
+
+/* Which provider the form is currently pointed at, by base URL rather than by the preset
+ * dropdown — the player may have typed a base URL by hand. */
+function currentPreset() {
+  const url = $('baseUrl').value.trim();
+  return state.settings.presets.find((p) => p.baseUrl === url) || null;
+}
+
+/* Ask the provider what it offers, and fall back to the curated list.
+ *
+ * ⚠️ MUST NEVER LEAVE THE PLAYER WITH NO WAY TO PICK A MODEL. A provider that does not serve
+ * /models, one that is down, and a base URL with a typo in it all land in the same place: the
+ * preset's own list, plus the free-text box. */
+async function refreshModels() {
+  const preset = currentPreset();
+  const note = $('model-note');
+  note.textContent = 'Asking the provider what it offers…';
+
+  let live = [];
+  try {
+    const url = `/api/models?baseUrl=${encodeURIComponent($('baseUrl').value.trim())}`;
+    const result = await api(url);
+    live = Array.isArray(result.models) ? result.models : [];
+  } catch {
+    live = [];
+  }
+
+  if (live.length) {
+    state.models = live;
+    note.textContent = `${live.length} models offered by this provider.`;
+  } else {
+    state.models = preset?.models ? [...preset.models] : [];
+    note.textContent = state.models.length
+      ? 'The provider did not return a list, so these are the usual ones. Any model id can be typed in.'
+      : 'Type the model id your provider uses.';
+  }
+  renderModelSelect();
+}
+
+function renderModelSelect() {
+  const select = $('model-select');
+  const custom = $('model');
+  const chosen = custom.value.trim();
+  select.replaceChildren();
+
+  /* Whatever is actually saved always appears, even when the provider never listed it, so the
+   * form shows the truth rather than the nearest available option. */
+  const ids = [...state.models];
+  if (chosen && !ids.includes(chosen)) ids.unshift(chosen);
+
+  for (const id of ids) {
+    const option = document.createElement('option');
+    option.value = id;
+    option.textContent = id;
+    select.append(option);
+  }
+
+  const other = document.createElement('option');
+  other.value = CUSTOM;
+  other.textContent = 'Other — type a model id';
+  select.append(other);
+
+  const isCustom = !chosen || !ids.includes(chosen);
+  select.value = isCustom ? CUSTOM : chosen;
+  custom.hidden = !isCustom;
 }
 
 function showPresetNote() {
@@ -83,6 +158,13 @@ function updateKeyField() {
   $('key-field').hidden = local;
 }
 
+/* ⚠️ "READY" IS A CLAIM ABOUT A ROUND TRIP THAT WORKED, NOT ABOUT A KEY BEING PRESENT.
+ *
+ * It used to be derived from `hasKey`, which is true the moment any string is saved. A revoked
+ * key, a key with no credit and a mistyped model id all satisfied that and rendered as
+ * "Ready", and the player then met the real failure several messages into Act One — where it
+ * reads as the game being broken rather than as their setup being wrong. A key that has not
+ * been checked says so. */
 function renderModelStatus() {
   const line = $('model-status');
   const text = line.querySelector('.status-text');
@@ -93,10 +175,45 @@ function renderModelStatus() {
     text.textContent = 'No API key yet. Add one below and Ava will start talking.';
     return;
   }
-  line.className = 'status-line ok';
-  text.textContent = state.settings.keyFromEnv
-    ? `Ready — ${state.settings.model} (key from your environment)`
-    : `Ready — ${state.settings.model}`;
+
+  if (state.verify === 'checking') {
+    line.className = 'status-line';
+    text.textContent = 'Checking the connection…';
+    return;
+  }
+
+  if (state.verify?.ok) {
+    line.className = 'status-line ok';
+    text.textContent = state.settings.keyFromEnv
+      ? `Ready — ${state.settings.model} (key from your environment)`
+      : `Ready — ${state.settings.model}`;
+    return;
+  }
+
+  if (state.verify && !state.verify.ok) {
+    line.className = 'status-line bad';
+    text.textContent = state.verify.hint
+      ? `${state.verify.error} ${state.verify.hint}`
+      : state.verify.error;
+    return;
+  }
+
+  line.className = 'status-line warn';
+  text.textContent = state.needsKey
+    ? 'A key is saved, but it has not been checked yet.'
+    : 'Not checked yet.';
+}
+
+/* One real request, and the status line reports whatever came back. */
+async function verifyConnection() {
+  state.verify = 'checking';
+  renderModelStatus();
+  try {
+    state.verify = await api('/api/verify', { method: 'POST' });
+  } catch (err) {
+    state.verify = { ok: false, error: err.message };
+  }
+  renderModelStatus();
 }
 
 function fillForm() {
@@ -107,6 +224,7 @@ function fillForm() {
    * says whether one is already saved. Leaving it blank on save keeps the existing key. */
   $('apiKey').placeholder = state.settings.hasKey ? 'A key is saved — leave blank to keep it' : 'Paste your key';
   updateKeyField();
+  renderModelSelect();
 }
 
 async function saveSettings(patch, statusEl) {
@@ -127,10 +245,14 @@ async function saveSettings(patch, statusEl) {
 
   state.settings = { ...state.settings, ...result.settings };
   state.needsKey = result.needsKey;
+  /* Anything saved here can invalidate the last verdict — a new key, a different model, another
+   * provider. Holding on to a stale "Ready" is exactly the lie this is meant to stop. */
+  state.verify = null;
   fillForm();
   renderModelStatus();
   renderDifficulty();
   if (statusEl) setStatus(statusEl, 'Saved.', 'ok');
+  await verifyConnection();
 }
 
 /* ---------------------------------------------------------------- step two */
@@ -174,6 +296,7 @@ function renderDifficulty() {
         $('baseUrl').value = state.settings.difficultyBaseUrl;
         $('model').value = entry.id;
         await saveSettings({ baseUrl: state.settings.difficultyBaseUrl, model: entry.id }, $('save-status'));
+        await refreshModels();
       } catch (err) {
         button.disabled = false;
         button.textContent = 'Use this';
@@ -243,10 +366,13 @@ function renderActs() {
       const start = document.createElement('button');
       start.type = 'button';
       start.className = 'btn';
-      start.textContent = solved ? `Play Act ${act.number} again` : `Start Act ${act.number}`;
+      const base = act.startLabel || `Start Act ${act.number}`;
+      start.textContent = solved ? `Play Act ${act.number} again` : base;
       start.addEventListener('click', () => {
         setCurrent(act.id);
-        window.location.href = 'council.html';
+        /* Acts choose where they begin. Act Three starts at the staff portal, holding a stolen
+         * credential, rather than on the public homepage. */
+        window.location.href = act.landing || 'council.html';
       });
       actions.append(start);
       card.append(actions);
@@ -268,7 +394,10 @@ function renderAvaState() {
 /* ------------------------------------------------------------------- wiring */
 
 async function refresh() {
+  const verify = state?.verify ?? null;
   state = await api('/api/state');
+  state.models = [];
+  state.verify = verify;
   fillForm();
   renderModelStatus();
   renderDifficulty();
@@ -281,6 +410,22 @@ async function boot() {
   renderPresets();
 
   $('baseUrl').addEventListener('input', updateKeyField);
+
+  $('model-select').addEventListener('change', () => {
+    const value = $('model-select').value;
+    if (value === CUSTOM) {
+      $('model').hidden = false;
+      $('model').focus();
+      return;
+    }
+    $('model').value = value;
+    $('model').hidden = true;
+  });
+
+  await refreshModels();
+  /* Check what is already saved on arrival, so the first screen tells the truth rather than
+   * waiting for the player to press anything. */
+  if (state.settings.hasKey || !state.needsKey) await verifyConnection();
 
   $('settings-form').addEventListener('submit', async (event) => {
     event.preventDefault();

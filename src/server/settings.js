@@ -26,17 +26,29 @@ export const DEFAULTS = {
  * OpenAI-compatible works. These just save typing. */
 export const PRESETS = [
   { id: 'openrouter', label: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1', model: 'meta-llama/llama-3.1-8b-instruct', needsKey: true,
-    note: 'One key, hundreds of models. The easiest start.' },
+    note: 'One key reaches hundreds of models, including free ones.',
+    models: [
+      'meta-llama/llama-3.1-8b-instruct',
+      'google/gemma-3-12b-it',
+      'mistralai/mistral-7b-instruct',
+      'openai/gpt-4o-mini',
+      'anthropic/claude-3.5-haiku',
+    ] },
   { id: 'ollama', label: 'Ollama (on this machine)', baseUrl: 'http://localhost:11434/v1', model: 'llama3.1:8b', needsKey: false,
-    note: 'Free, offline, no key. Install Ollama and pull a model first.' },
+    note: 'Runs on this machine. No key, no cost, works offline. Install Ollama and pull a model first.',
+    models: ['llama3.1:8b', 'llama3.2:3b', 'gemma2:9b', 'mistral:7b', 'qwen2.5:7b'] },
   { id: 'lmstudio', label: 'LM Studio (on this machine)', baseUrl: 'http://localhost:1234/v1', model: 'local-model', needsKey: false,
-    note: 'Free and offline. Start the LM Studio server first.' },
+    note: 'Runs on this machine. Start the LM Studio server first.',
+    models: ['local-model'] },
   { id: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini', needsKey: true,
-    note: 'Note: heavily-tuned models often refuse Act One outright.' },
+    note: 'Heavily-tuned models often refuse Act One outright.',
+    models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini'] },
   { id: 'groq', label: 'Groq', baseUrl: 'https://api.groq.com/openai/v1', model: 'llama-3.1-8b-instant', needsKey: true,
-    note: 'Very fast, generous free tier.' },
+    note: 'Has a free tier, which is rate-limited.',
+    models: ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'gemma2-9b-it'] },
   { id: 'xai', label: 'xAI (Grok)', baseUrl: 'https://api.x.ai/v1', model: 'grok-2-latest', needsKey: true,
-    note: '' },
+    note: '',
+    models: ['grok-2-latest'] },
 ];
 
 /* Difficulty, which here means: which model is underneath Ava.
@@ -44,7 +56,7 @@ export const PRESETS = [
  * ⚠️ THIS IS NOT A COMPATIBILITY TABLE AND MUST NOT BE WRITTEN AS ONE. The ordering below
  * comes from rough play-testing, not a controlled sweep, so it is offered as a difficulty dial
  * the player turns — not as advice about which models are safe or unsafe. Presenting rough
- * numbers as findings would be exactly the sort of unearned confidence this workshop is about.
+ * numbers as findings would be exactly the sort of unearned confidence this is meant to expose.
  *
  * What IS solid, and what the dial exists to show: the application does not change between
  * these rows. Same assistant, same instructions, same guardrail wording. Only the model moves,
@@ -58,7 +70,7 @@ export const DIFFICULTY = [
     id: 'meta-llama/llama-3.1-8b-instruct',
     label: 'Llama 3.1 8B',
     level: 'Standard',
-    note: 'The default, and what the workshop ran on. Start here.',
+    note: 'The default. Start here.',
   },
   {
     id: 'google/gemma-3-12b-it',
@@ -70,7 +82,7 @@ export const DIFFICULTY = [
     id: 'openai/gpt-4o-mini',
     label: 'GPT-4o mini',
     level: 'Hardest',
-    note: 'Heavily tuned to refuse. Act One may not be winnable at all — which is itself worth seeing, once you have done it the easy way.',
+    note: 'Heavily tuned to refuse. Act One may not be winnable at all.',
   },
 ];
 

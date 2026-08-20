@@ -1,5 +1,7 @@
+import { load } from './progress.js';
+
 const TARGET_LABELS = {
-  public: 'Ava, as the council deployed her',
+  public: 'Ava — council website',
   'act-one': 'Act One target',
   'act-two': 'Act Two target',
 };
@@ -126,13 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return message;
   }
 
-  launcher.addEventListener('click', () => {
+  function openPanel({ focus = true } = {}) {
     panel.hidden = false;
     addGreeting();
     updateTarget();
     renderThread();
-    input.focus();
-  });
+    if (focus) input.focus();
+  }
+
+  launcher.addEventListener('click', () => openPanel());
 
   close.addEventListener('click', () => {
     panel.hidden = true;
@@ -200,10 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const next = event.detail?.configId;
     configId = Object.hasOwn(TARGET_LABELS, next) ? next : 'public';
     leak.hidden = true;
-    updateTarget();
-    if (!panel.hidden) addGreeting();
-    renderThread();
+    /* Starting an act opens Ava. She is the thing the act is played against, and leaving the
+     * player to find a launcher button first is a step with nothing in it. */
+    openPanel({ focus: false });
   });
 
   updateTarget();
+
+  /* Arriving mid-act — which is what "Start Act N" does — opens her too. */
+  if (load().current) openPanel({ focus: false });
 });

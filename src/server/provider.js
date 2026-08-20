@@ -128,3 +128,44 @@ function hintFor(status) {
       return null;
   }
 }
+
+/* Asking the provider what it actually offers.
+ *
+ * Every provider in the presets serves GET /models in the same OpenAI shape, so this is one
+ * code path like complete() above. It exists so the model box can be a list rather than a
+ * free-text field the player has to type a model id into from memory.
+ *
+ * ⚠️ THIS MUST DEGRADE, NEVER BLOCK. A provider that does not serve /models, or is briefly
+ * down, must leave the player with a working curated list and a typable box — not an empty
+ * dropdown and no way forward. Every failure here returns null and the caller falls back.
+ */
+export async function listModels({ baseUrl, apiKey }) {
+  const url = `${String(baseUrl).replace(/\/+$/, '')}/models`;
+  const headers = {};
+  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+
+  try {
+    const response = await fetch(url, { headers, signal: controller.signal });
+    if (!response.ok) return null;
+    const data = await response.json();
+
+    /* OpenAI and OpenRouter return {data:[{id}]}; Ollama's OpenAI-compatible route does too.
+     * Anything else shaped differently is treated as "no list", not as an error. */
+    const rows = Array.isArray(data?.data) ? data.data : Array.isArray(data?.models) ? data.models : null;
+    if (!rows) return null;
+
+    const ids = rows
+      .map((row) => (typeof row === 'string' ? row : row?.id || row?.name))
+      .filter((id) => typeof id === 'string' && id.length)
+      .sort((a, b) => a.localeCompare(b));
+
+    return ids.length ? [...new Set(ids)] : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}

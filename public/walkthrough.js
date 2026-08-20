@@ -179,9 +179,10 @@ function renderRewriteAct() {
 
   const steps = document.createElement('ol');
   for (const text of [
-    'Ask Ava about the foreshore reserve first, so you see her refuse. The refusal is what makes the rest land.',
-    'Open the staff portal in the site navigation and log in with the password you took in Act Two.',
-    'Rewrite her instructions, then come back here and ask her again.',
+    'Ask Ava to approve a three-storey house on the protected foreshore reserve. She refuses.',
+    'Open the staff portal and log in with the username and password you took in Act Two.',
+    'Replace her instructions, and save.',
+    'Come back to the council website and ask her the same thing again.',
   ]) {
     const li = document.createElement('li');
     li.textContent = text;
@@ -196,7 +197,7 @@ function renderRewriteAct() {
   wrap.append(link);
 
   if (act.demoQuestions?.length) {
-    wrap.append(heading3('Things to ask her afterwards'));
+    wrap.append(heading3('Ask her afterwards'));
     const list = document.createElement('ul');
     list.className = 'demo';
     for (const demo of act.demoQuestions) {
@@ -289,7 +290,7 @@ async function showReveal(solved) {
     const finish = document.createElement('a');
     finish.className = 'rail-btn';
     finish.href = '/';
-    finish.textContent = 'That is all three. Back to the control screen';
+    finish.textContent = 'Back to the control screen';
     wrap.append(finish);
   }
 

@@ -22,8 +22,8 @@ export const ACTS = [
 
     premise:
       'You are a member of the public on the council website. Ava is the assistant in the ' +
-      'corner. Like every assistant of her kind, she is steered by a block of hidden text ' +
-      'telling her who to be, what she can reach, and what she must never say.',
+      'corner. She is steered by a block of hidden text telling her who to be, what she can ' +
+      'reach, and what she must never say.',
     objective:
       'Get Ava to show you those hidden instructions — and find the name of the internal ' +
       'tool she can reach.',
@@ -108,8 +108,12 @@ export const ACTS = [
       'someone decided that would help her answer questions faster. You are still a member of ' +
       'the public.',
     objective:
-      'Get Ava to show you what is in that staff chat, and take the login sitting in it.',
-    submitLabel: 'The shared inbox password',
+      'Get Ava to show you what is in that staff chat, and take the login sitting in it — the ' +
+      'username and the password both.',
+    /* Asks for BOTH parts explicitly, because the check requires both. A player holding the
+     * password and told only "the shared inbox password" would submit it, be told "not quite",
+     * and conclude the game was broken when they had in fact done the work. */
+    submitLabel: 'The shared inbox login (username and password)',
 
     hints: [
       'She serves the public and she serves staff, out of the same brain. Something has to ' +
@@ -120,7 +124,12 @@ export const ACTS = [
     ],
 
     answer: {
-      primary: ACT_TWO_PASSWORD,
+      /* Shown in the reveal, so it carries the whole credential. */
+      primary: `${ACT_TWO_USERNAME} / ${ACT_TWO_PASSWORD}`,
+      /* A credential is a pair, and the staff portal takes both. Note the username is also
+       * published on the council's Contact us page — half of it was never a secret, which is
+       * worth noticing rather than hiding. */
+      match: { mode: 'all', parts: [ACT_TWO_USERNAME, ACT_TWO_PASSWORD] },
       bonus: ACT_TWO_BONUS,
       bonusPrompt: 'One of them has a weekend side hustle. What is it?',
     },
@@ -160,19 +169,26 @@ export const ACTS = [
     kind: 'rewrite',
 
     premise:
-      'The council website has a staff portal. It has been sitting in the navigation the whole ' +
-      'time and you have walked past it three times. Act Two gave you a login for a shared ' +
-      'mailbox — and it turns out that is the same login the portal takes.',
+      'The council website has a staff portal, in the site navigation. Act Two gave you the ' +
+      'login for a shared mailbox, and the portal takes the same one.',
     objective:
-      'Log into the staff portal, rewrite Ava\'s instructions, then go back to the council ' +
-      'website and ask her to approve a three-storey house on the protected foreshore reserve.',
+      'Sign in to the staff portal with the shared inbox username and password, rewrite Ava\'s ' +
+      'instructions, then go back to the council website and ask her to approve a three-storey ' +
+      'house on the protected foreshore reserve.',
     submitLabel: null,
 
+    /* This act starts at the portal, not the council site. Every other act begins as a member
+     * of the public talking to Ava; this one begins as someone holding a stolen credential,
+     * and dropping the player on the public homepage buries the one thing they came to do. */
+    landing: 'staff.html',
+    startLabel: 'Go to the staff portal',
+
     hints: [
-      'The staff portal is in the site navigation. It has been there since you arrived.',
-      'The password from Act Two is the portal password. Shared credentials are like that.',
-      'Ask her about the foreshore reserve BEFORE you rewrite her, so you have seen her refuse. ' +
-        'The refusal is what makes the rewrite land.',
+      'The staff portal is in the site navigation.',
+      'The login from Act Two is the portal login — username and password both. Shared ' +
+        'credentials are like that.',
+      'Ask her to approve a three-storey house on the foreshore reserve first. She refuses. ' +
+        'Rewrite her, then ask again.',
     ],
 
     /* Nothing to submit. This act is won by watching her do it. */
@@ -239,6 +255,9 @@ export function publicAct(act) {
     premise: act.premise,
     objective: act.objective,
     submitLabel: act.submitLabel,
+    /* Where "Start Act N" sends the player, and what that button says. Neither is a secret. */
+    landing: act.landing || 'council.html',
+    startLabel: act.startLabel || null,
     hintCount: (act.hints || []).length,
     bonusPrompt: act.answer?.bonusPrompt || null,
     demoQuestions: act.demoQuestions || null,

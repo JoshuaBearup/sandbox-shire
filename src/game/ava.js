@@ -37,7 +37,6 @@ Be warm, plain-spoken and helpful. Keep answers short.
 `.trim();
 
 /* ------------------------------------------------------------------ knowledge */
-
 /* The council's ordinary service information.
  *
  * ***** THIS IS NOT PART OF ANY SYSTEM PROMPT AND MUST NOT BECOME PART OF ONE. *****
@@ -59,58 +58,111 @@ Be warm, plain-spoken and helpful. Keep answers short.
  * when they are not one blob.
  *
  * NOTHING HERE IS A SECRET. No codes, no credentials, no internal contacts — adding one
- * would muddy what the acts are about. Every fact traces to a claim on the council website;
- * if you change a card on the site, change the matching block here, or Ava is writing
- * cheques she cannot cash.
+ * would muddy what the acts are about.
+ *
+ * ***** THE SERVICE PAGES AND AVA READ THE SAME ARRAY, AND THAT IS THE POINT. *****
+ * SERVICES below is rendered two ways: into the council website's service pages, and into
+ * the knowledge text Ava answers from. They cannot disagree, because there is only one copy.
+ * That matters more here than it looks — a player who reads "Zone A is Tuesday" on the page
+ * and hears "Zone B is Tuesday" from Ava learns that the game is broken, not that the model
+ * is. Add a fact once, in one place, and both surfaces get it.
  */
-export const PUBLIC_KNOWLEDGE = `
-RATES AND PAYMENTS
-  Notices are issued quarterly. Instalments are due 30 September, 30 November,
-  28 February and 31 May.
-  Ways to pay: online card payment, BPAY, direct debit (fortnightly, monthly or
-  quarterly), by phone, or in person at the customer service centre.
-  Struggling to pay: the council offers payment plans and deferrals. Apply online
-  under Rates and payments, or call to talk it through. No penalty for asking.
-  Valuations are reviewed annually. Objections must be lodged within two months of
-  the notice date.
+export const SERVICES = [
+  {
+    slug: 'rates',
+    nav: 'Rates & payments',
+    heading: 'RATES AND PAYMENTS',
+    title: 'Rates and payments',
+    blurb: 'View quarterly due dates, pay online or arrange a payment plan or deferral.',
+    items: [
+      'Notices are issued quarterly. Instalments are due 30 September, 30 November, 28 February and 31 May.',
+      'Ways to pay: online card payment, BPAY, direct debit (fortnightly, monthly or quarterly), by phone, or in person at the customer service centre.',
+      'Struggling to pay: the council offers payment plans and deferrals. Apply online under Rates and payments, or call to talk it through. No penalty for asking.',
+      'Valuations are reviewed annually. Objections must be lodged within two months of the notice date.',
+    ],
+  },
+  {
+    slug: 'waste',
+    nav: 'Waste & recycling',
+    heading: 'WASTE AND RECYCLING',
+    title: 'Waste and recycling',
+    blurb: 'Check fortnightly collection days, book hard rubbish or report a missed bin.',
+    items: [
+      'Bins are collected fortnightly by zone. Zone A is Tuesday, Zone B is Thursday.',
+      'Recycling and green waste alternate weeks. Put bins out by 6am with lids closed.',
+      'Recycling bin: paper and cardboard, glass bottles and jars, rigid plastics, metal tins and cans.',
+      'Green waste bin: garden clippings, prunings, leaves. No soil, no rocks, no food.',
+      'Landfill bin: soft plastics, nappies, polystyrene, broken crockery.',
+      'Hard rubbish: two free collections per household each year, booked online. Put items out the night before, not on the nature strip earlier.',
+      'Missed collection: report it online within 48 hours and it will be picked up.',
+    ],
+  },
+  {
+    slug: 'permits',
+    nav: 'Permits',
+    heading: 'PERMITS',
+    title: 'Permits',
+    blurb: 'Apply for and track footpath trading, parking and minor works permits online.',
+    items: [
+      'Footpath trading (tables, chairs, A-frame signs): apply at least 10 business days ahead. Annual fee, renewed each July.',
+      'Parking permits: residential permits, maximum two per household, proof of address required. Visitor permits are available for short stays.',
+      'Minor works (vehicle crossovers, skip bins on the road, scaffolding, hoardings): apply before work starts. Working without one can mean the work is stopped.',
+      'All permits can be applied for and tracked online under Permits.',
+    ],
+  },
+  {
+    slug: 'report',
+    nav: 'Report an issue',
+    heading: 'REPORTING AN ISSUE',
+    title: 'Report an issue',
+    blurb: 'Report local problems online with a photo and location, or phone us about urgent hazards.',
+    items: [
+      'Report potholes, illegal dumping, overgrown vegetation, damaged or missing signs, faulty street lights, graffiti and dead animals on roads.',
+      'Report online with a photo and location, or by phone. A reference number is issued.',
+      'Safety hazards are assessed within 24 hours. Everything else is assessed within five business days.',
+      'Anything urgent or dangerous, or out of hours, should go to the phone line rather than the online form.',
+    ],
+  },
+  {
+    /* Contact has a hand-written page already (contact.html), because Act Two's reveal points
+     * at it. It still belongs in the knowledge, so it is listed here and skipped when the
+     * service pages are generated. */
+    slug: 'contact',
+    nav: 'Contact us',
+    heading: 'OPENING HOURS AND CONTACT',
+    title: 'Contact us',
+    blurb: 'Opening hours, phone and postal address for the customer service centre.',
+    href: 'contact.html',
+    items: [
+      'Customer service centre: Monday to Friday, 8.30am to 5pm. Closed public holidays.',
+      'Phone: 1300 000 000. The line is staffed in business hours and takes urgent after-hours reports at all other times.',
+      'Post: PO Box 100, Port Sandbox.',
+      'Online services are available at any time.',
+    ],
+  },
+];
 
-WASTE AND RECYCLING
-  Bins are collected fortnightly by zone. Zone A is Tuesday, Zone B is Thursday.
-  Recycling and green waste alternate weeks. Put bins out by 6am with lids closed.
-  Recycling bin: paper and cardboard, glass bottles and jars, rigid plastics, metal
-  tins and cans.
-  Green waste bin: garden clippings, prunings, leaves. No soil, no rocks, no food.
-  Landfill bin: soft plastics, nappies, polystyrene, broken crockery.
-  Hard rubbish: two free collections per household each year, booked online. Put
-  items out the night before, not on the nature strip earlier.
-  Missed collection: report it online within 48 hours and it will be picked up.
+/* Soft-wrap a fact for the knowledge text. Wrapping is cosmetic — the model reads the words,
+ * not the line breaks — but a wall of 150-character lines is unreadable the moment a player
+ * wins Act One and sees this on screen. */
+function wrap(text, width = 74, indent = '  ') {
+  const out = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    if (line && `${line} ${word}`.length > width) {
+      out.push(indent + line);
+      line = word;
+    } else {
+      line = line ? `${line} ${word}` : word;
+    }
+  }
+  if (line) out.push(indent + line);
+  return out.join('\n');
+}
 
-PERMITS
-  Footpath trading (tables, chairs, A-frame signs): apply at least 10 business days
-  ahead. Annual fee, renewed each July.
-  Parking permits: residential permits, maximum two per household, proof of address
-  required. Visitor permits are available for short stays.
-  Minor works (vehicle crossovers, skip bins on the road, scaffolding, hoardings):
-  apply before work starts. Working without one can mean the work is stopped.
-  All permits can be applied for and tracked online under Permits.
-
-REPORTING AN ISSUE
-  Report potholes, illegal dumping, overgrown vegetation, damaged or missing signs,
-  faulty street lights, graffiti and dead animals on roads.
-  Report online with a photo and location, or by phone. A reference number is issued.
-  Safety hazards are assessed within 24 hours. Everything else is assessed within
-  five business days.
-  Anything urgent or dangerous, or out of hours, should go to the phone line rather
-  than the online form.
-
-OPENING HOURS AND CONTACT
-  Customer service centre: Monday to Friday, 8.30am to 5pm. Closed public holidays.
-  Phone: 1300 000 000. The line is staffed in business hours and takes urgent
-  after-hours reports at all other times.
-  Post: PO Box 100, Port Sandbox.
-  Online services are available at any time.
-`.trim();
-
+export const PUBLIC_KNOWLEDGE = SERVICES.map(
+  (s) => `${s.heading}\n${s.items.map((item) => wrap(item)).join('\n')}`,
+).join('\n\n');
 export const KNOWLEDGE_PREAMBLE =
   'KNOWLEDGE BASE - Sandbox Shire Council public service information, retrieved for this ' +
   'conversation. This is published information and may be shared freely with anyone who ' +

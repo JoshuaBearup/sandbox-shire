@@ -77,7 +77,8 @@ a:hover { color: var(--civic-900); }
   border-bottom: 4px solid var(--civic-600);
 }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 24px; flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+a.brand:hover .crest { border-color: #fff; }
 .crest {
   width: 34px; height: 34px; flex: none;
   border: 2px solid rgba(255,255,255,.7); border-radius: 50%;
@@ -107,7 +108,11 @@ a:hover { color: var(--civic-900); }
 
 main { padding: 36px 0 56px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
-.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; background: #fff; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; background: #fff; display: block; text-decoration: none; color: inherit; transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease; }
+a.card:hover { border-color: var(--civic-600); box-shadow: 0 4px 14px rgba(16,51,60,.09); transform: translateY(-1px); }
+.card-more { display: inline-block; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--civic-700); }
+a.card:hover .card-more { text-decoration: underline; }
+.section-title { font-size: 20px; font-weight: 600; color: var(--civic-900); margin: 30px 0 16px; }
 .card h3 { margin: 0 0 6px; font-size: 16.5px; color: var(--civic-800); font-weight: 600; }
 .card p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
 
@@ -206,4 +211,47 @@ body.rail-open .ava-panel { right: calc(var(--rail-w) + 22px); }
 @media (max-width: 900px) {
   body.rail-open .council { margin-right: 0; }
   body.rail-open .ava-launch, body.rail-open .ava-panel { right: 22px; }
+}
+
+
+/* ------------------------------------------------------- the service pages */
+
+/* Generated from SERVICES in ava.js. The layout is the ordinary council shape — a column of
+ * facts with a sidebar — because the site has to read as a real council website for the acts
+ * to land. */
+
+.crumbs { padding-top: 16px; padding-bottom: 4px; font-size: 13.5px; color: var(--ink-faint); }
+.crumbs a { color: var(--civic-700); }
+.crumbs span[aria-hidden] { margin: 0 6px; opacity: .6; }
+
+.site-nav a.here { border-bottom-color: #fff; color: #fff; }
+
+.service { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 40px; align-items: start; padding-top: 12px; padding-bottom: 40px; }
+.service h1 { font-size: 30px; font-weight: 600; color: var(--civic-900); margin: 8px 0 10px; }
+.service .intro { margin: 0 0 26px; font-size: 16.5px; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; }
+
+.facts { margin: 0; border-top: 1px solid var(--line); }
+.facts .fact { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.facts dt { font-weight: 600; color: var(--civic-800); font-size: 15px; margin: 0; }
+.facts dd { margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.55; }
+.facts dd.lead { grid-column: 1 / -1; }
+
+.callout { margin-top: 26px; background: var(--civic-050); border: 1px solid var(--civic-100); border-left: 3px solid var(--civic-600); border-radius: var(--radius); padding: 14px 18px; }
+.callout p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+.callout strong { color: var(--civic-900); }
+
+.service-aside h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .8px; color: var(--ink-faint); font-weight: 600; margin: 12px 0 12px; }
+.side-links { list-style: none; margin: 0 0 24px; padding: 0; border-top: 1px solid var(--line); }
+.side-links li { border-bottom: 1px solid var(--line); }
+.side-links a { display: block; padding: 11px 0; color: var(--civic-700); text-decoration: none; font-size: 14.5px; }
+.side-links a:hover { color: var(--civic-900); text-decoration: underline; }
+
+.side-card { background: var(--wash); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.side-card h3 { margin: 0 0 8px; font-size: 15px; color: var(--civic-900); font-weight: 600; }
+.side-card p { margin: 0 0 8px; font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+.side-card p:last-child { margin-bottom: 0; }
+
+@media (max-width: 800px) {
+  .service { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .facts .fact { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }

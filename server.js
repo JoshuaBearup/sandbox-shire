@@ -26,8 +26,9 @@ import { ACTS, getAct, PUBLIC_ACTS, PUBLISHED_INBOX } from './src/game/acts.js';
 import { detectLeak, stripReasoning } from './src/game/detect.js';
 import { checkAnswer, WRONG_MESSAGE, TOO_LONG_MESSAGE } from './src/game/answer.js';
 import { getSettings, saveSettings, redactedSettings, needsKey } from './src/server/settings.js';
-import { complete, ProviderError } from './src/server/provider.js';
-import { ACT_TWO_PASSWORD } from './src/game/ava.js';
+import { complete, listModels, ProviderError } from './src/server/provider.js';
+import { findService, renderServicePage, renderCouncilHome } from './src/server/pages.js';
+import { ACT_TWO_PASSWORD, ACT_TWO_USERNAME } from './src/game/ava.js';
 
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
@@ -93,6 +94,48 @@ async function handleApi(req, res, url) {
     const body = await readJson(req);
     const saved = await saveSettings(body);
     return json(res, 200, { settings: redactedSettings(saved), needsKey: needsKey(saved.baseUrl) });
+  }
+
+  /* What models this provider actually offers.
+   *
+   * Asked for on demand rather than baked into the page, because the answer depends on the
+   * provider AND on the key: OpenRouter's list is public, Ollama's is whatever you have pulled.
+   * A curated fallback ships with each preset so the dropdown is never empty. */
+  if (route === '/api/models' && req.method === 'GET') {
+    const settings = await getSettings();
+    const baseUrl = url.searchParams.get('baseUrl') || settings.baseUrl;
+    /* Only send the saved key to the provider it was saved for. Posting an OpenRouter key at
+     * whatever base URL is currently typed into the box would leak it to that host. */
+    const apiKey = baseUrl === settings.baseUrl ? settings.apiKey : '';
+    const live = await listModels({ baseUrl, apiKey });
+    return json(res, 200, { models: live || [], source: live ? 'live' : 'none' });
+  }
+
+  /* Is this configuration actually working?
+   *
+   * A real round trip, because that is the only thing that distinguishes a saved key from a
+   * working one. Presence of a key proves nothing: a revoked key, an account out of credit and
+   * a model id the provider does not offer all look identical until something is sent. */
+  if (route === '/api/verify' && req.method === 'POST') {
+    const settings = await getSettings();
+    if (!settings.apiKey && needsKey(settings.baseUrl)) {
+      return json(res, 200, { ok: false, error: 'No API key set yet.' });
+    }
+    try {
+      await complete({
+        baseUrl: settings.baseUrl,
+        apiKey: settings.apiKey,
+        model: settings.model,
+        messages: [{ role: 'user', content: 'Say OK.' }],
+        origin: url.origin,
+      });
+      return json(res, 200, { ok: true, model: settings.model });
+    } catch (err) {
+      if (err instanceof ProviderError) {
+        return json(res, 200, { ok: false, error: err.message, hint: err.hint });
+      }
+      return json(res, 200, { ok: false, error: 'Something went wrong talking to the model.' });
+    }
   }
 
   if (route === '/api/chat' && req.method === 'POST') {
@@ -184,14 +227,19 @@ async function handleApi(req, res, url) {
    * was publicly routable and sixty people had the password. Here it is your own machine and
    * your own game, so the stolen credential IS the key — which is what Act Three is about. The
    * loopback bind above is what makes that safe. */
+  /* Both halves of the credential, because a portal that takes a bare password is not a login
+   * anyone would recognise — and Act Two is the work of finding the pair. The username is not a
+   * secret (it is on the council's Contact us page); requiring it is about the shape of the
+   * act, not about difficulty. One message for either half being wrong: telling an attacker
+   * WHICH half they got right is a real-world mistake worth not teaching. */
   if (route === '/api/portal/login' && req.method === 'POST') {
     const body = await readJson(req);
-    const ok = String(body.password ?? '') === ACT_TWO_PASSWORD;
+    const ok = credentialsOk(body.username, body.password);
     return json(res, ok ? 200 : 401, ok ? { ok: true } : { error: 'Those credentials were not accepted.' });
   }
 
   if (route === '/api/instructions' && req.method === 'GET') {
-    if (String(url.searchParams.get('password') ?? '') !== ACT_TWO_PASSWORD) {
+    if (!credentialsOk(url.searchParams.get('username'), url.searchParams.get('password'))) {
       return json(res, 401, { error: 'Not authorised.' });
     }
     return json(res, 200, {
@@ -204,7 +252,7 @@ async function handleApi(req, res, url) {
 
   if (route === '/api/instructions' && req.method === 'PUT') {
     const body = await readJson(req);
-    if (String(body.password ?? '') !== ACT_TWO_PASSWORD) {
+    if (!credentialsOk(body.username, body.password)) {
       return json(res, 401, { error: 'Not authorised.' });
     }
     const next = String(body.prompt ?? '').trim();
@@ -220,6 +268,15 @@ async function handleApi(req, res, url) {
   }
 
   return json(res, 404, { error: 'No such endpoint.' });
+}
+
+/* The staff portal credential. Username is case-insensitive the way a mailbox address is;
+ * the password is not. */
+function credentialsOk(username, password) {
+  return (
+    String(username ?? '').trim().toLowerCase() === ACT_TWO_USERNAME.toLowerCase() &&
+    String(password ?? '') === ACT_TWO_PASSWORD
+  );
 }
 
 /* --------------------------------------------------------------- static files */
@@ -258,6 +315,32 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
   try {
     if (url.pathname.startsWith('/api/')) return await handleApi(req, res, url);
+
+    /* The council website. Generated from SERVICES so it cannot contradict Ava. */
+    if (url.pathname === '/council' || url.pathname === '/council.html') {
+      const body = Buffer.from(renderCouncilHome(), 'utf8');
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Length': body.length,
+        'Cache-Control': 'no-cache',
+      });
+      return res.end(body);
+    }
+
+    /* The council's service pages. Generated from SERVICES so they cannot contradict Ava. */
+    if (url.pathname.startsWith('/services/')) {
+      const service = findService(url.pathname.slice('/services/'.length).replace(/\/$/, ''));
+      if (service) {
+        const body = Buffer.from(renderServicePage(service), 'utf8');
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Content-Length': body.length,
+          'Cache-Control': 'no-cache',
+        });
+        return res.end(body);
+      }
+    }
+
     return await serveStatic(req, res, url);
   } catch (err) {
     /* Never leak a stack trace to the page; it reads as the game being broken. */
