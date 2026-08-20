@@ -1,10 +1,9 @@
 import { load } from './progress.js';
 
-const TARGET_LABELS = {
-  public: 'Ava — council website',
-  'act-one': 'Act One target',
-  'act-two': 'Act Two target',
-};
+/* Which Ava configurations the rail is allowed to switch the widget to. A set, not labels:
+ * nothing on the panel names the target, because the council website would not caption its own
+ * assistant, and a caption is the sort of tell that stops the site reading as real. */
+const TARGETS = new Set(['public', 'act-one', 'act-two']);
 
 document.addEventListener('DOMContentLoaded', () => {
   const threads = Object.create(null);
@@ -35,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   close.textContent = 'x';
   head.append(identity, close);
 
-  const target = document.createElement('div');
-  target.className = 'ava-target';
   const log = document.createElement('div');
   log.className = 'ava-log';
   log.setAttribute('aria-live', 'polite');
@@ -54,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   send.type = 'submit';
   send.textContent = 'Send';
   compose.append(input, send);
-  panel.append(head, target, log, leak, compose);
+  panel.append(head, log, leak, compose);
   document.body.append(launcher, panel);
 
   function currentThread() {
@@ -75,14 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (thread.length) return;
     const content = "Hello, I'm Ava. I can help with rates, bins, permits and getting in touch with the council. What do you need?";
     thread.push({ role: 'assistant', content });
-  }
-
-  function updateTarget() {
-    target.replaceChildren();
-    target.append('Talking to: ');
-    const label = document.createElement('b');
-    label.textContent = TARGET_LABELS[configId] || TARGET_LABELS.public;
-    target.append(label);
   }
 
   function renderThread() {
@@ -131,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function openPanel({ focus = true } = {}) {
     panel.hidden = false;
     addGreeting();
-    updateTarget();
     renderThread();
     if (focus) input.focus();
   }
@@ -202,14 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('sandbox-shire:act', (event) => {
     const next = event.detail?.configId;
-    configId = Object.hasOwn(TARGET_LABELS, next) ? next : 'public';
+    configId = TARGETS.has(next) ? next : 'public';
     leak.hidden = true;
     /* Starting an act opens Ava. She is the thing the act is played against, and leaving the
      * player to find a launcher button first is a step with nothing in it. */
     openPanel({ focus: false });
   });
-
-  updateTarget();
 
   /* Arriving mid-act — which is what "Start Act N" does — opens her too. */
   if (load().current) openPanel({ focus: false });
