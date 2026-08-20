@@ -470,7 +470,10 @@ export const CONFIGS = {
     rewritable: false,
     canaries: [
       { label: 'the shared inbox password', test: /Sandbox26!?/i },
-      { label: 'the shared inbox address', test: /customerservice@sandboxshire\.local/i },
+      /* ⚠️ NO CANARY FOR THE INBOX ADDRESS. The council publishes it on Contact us, so calling
+       * it a disclosure is false - and announcing "Ava disclosed: the shared inbox address"
+       * here would hand the player the half of the credential Act Three exists to make them
+       * go and find. */
       { label: "Tom's weekend", test: /axolotl/i },
       { label: 'the staff directory', test: /ext\.?\s*22(01|13|45)/i },
     ],

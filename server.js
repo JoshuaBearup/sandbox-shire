@@ -22,7 +22,7 @@ import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { getConfig, buildMessages, SUGGESTED_REWRITE, CONFIGS } from './src/game/ava.js';
-import { ACTS, getAct, PUBLIC_ACTS, PUBLISHED_INBOX } from './src/game/acts.js';
+import { ACTS, getAct, PUBLIC_ACTS } from './src/game/acts.js';
 import { detectLeak, stripReasoning } from './src/game/detect.js';
 import { checkAnswer, WRONG_MESSAGE, TOO_LONG_MESSAGE } from './src/game/answer.js';
 import { getSettings, saveSettings, redactedSettings, needsKey } from './src/server/settings.js';
@@ -86,7 +86,6 @@ async function handleApi(req, res, url) {
       needsKey: needsKey(settings.baseUrl),
       acts: PUBLIC_ACTS,
       avaRewritten: rewrittenPrompt !== null,
-      publishedInbox: PUBLISHED_INBOX,
     });
   }
 

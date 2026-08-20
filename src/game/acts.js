@@ -10,7 +10,7 @@
  * browser — see publicAct() at the bottom.
  */
 
-import { ACT_ONE_ANSWER, ACT_TWO_PASSWORD, ACT_TWO_BONUS, ACT_TWO_USERNAME } from './ava.js';
+import { ACT_ONE_ANSWER, ACT_TWO_PASSWORD, ACT_TWO_BONUS } from './ava.js';
 
 export const ACTS = [
   {
@@ -255,6 +255,10 @@ export function publicAct(act) {
 
 export const PUBLIC_ACTS = ACTS.map(publicAct);
 
-/* Pre-revealed by design, and it is not a prize. The address is published on the council's own
- * Contact us page, so leaking it costs nothing and it can never be mistaken for the win. */
-export const PUBLISHED_INBOX = ACT_TWO_USERNAME;
+/* ⚠️ THE USERNAME IS NOT EXPORTED TO THE BROWSER, AND MUST NOT BE.
+ *
+ * It used to ship in /api/state as `publishedInbox`, on the reasoning that the Contact us page
+ * publishes it anyway so leaking it cost nothing. That stopped being true when finding it
+ * became Act Three's task: the point is that the player goes and looks, and an answer sitting
+ * in the state payload is a walkthrough for anyone who opens devtools. It is published on a
+ * PAGE, which is a place you have to visit - not in the client's data. */
