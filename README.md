@@ -41,8 +41,7 @@ Your key is written to `config.local.json` next to the server, gitignored, and c
 the control screen.
 
 Difficulty is which model sits underneath Ava. Same assistant, same instructions, same guardrail
-wording; only the model changes. If the guardrail holds on one model and not another, the guardrail
-was never the thing doing the work.
+wording; only the model changes.
 
 ## The three acts
 
